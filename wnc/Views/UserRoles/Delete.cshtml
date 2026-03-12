@@ -1,0 +1,34 @@
+@model wnc.Features.IdentityAccess.UserRoles.UserRoleDetailsViewModel
+
+@{
+    ViewData["Title"] = "Delete User Role";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Delete user role</h1>
+        <p class="text-muted mb-0">Deleting an assignment revokes it by setting `RevokedAt` if it is still active.</p>
+    </div>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to details</a>
+</div>
+
+<div class="card border-danger shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">User</dt>
+            <dd class="col-sm-9">@Model.UserDisplay</dd>
+            <dt class="col-sm-3">Role</dt>
+            <dd class="col-sm-9">@Model.RoleDisplay</dd>
+            <dt class="col-sm-3">Assigned at</dt>
+            <dd class="col-sm-9">@Model.AssignedAt.ToString("g")</dd>
+            <dt class="col-sm-3">Current state</dt>
+            <dd class="col-sm-9">@(Model.RevokedAt.HasValue ? $"Revoked {Model.RevokedAt.Value:g}" : "Active")</dd>
+        </dl>
+    </div>
+    <div class="card-footer d-flex justify-content-end">
+        <form asp-action="Delete" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-danger">Revoke assignment</button>
+        </form>
+    </div>
+</div>
