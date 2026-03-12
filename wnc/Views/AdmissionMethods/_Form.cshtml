@@ -1,0 +1,26 @@
+@model AdmissionMethodFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="MethodCode" class="form-label"></label>
+        <input asp-for="MethodCode" class="form-control" />
+        <span asp-validation-for="MethodCode" class="text-danger"></span>
+    </div>
+    <div class="col-md-8">
+        <label asp-for="MethodName" class="form-label"></label>
+        <input asp-for="MethodName" class="form-control" />
+        <span asp-validation-for="MethodName" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label"></label>
+        <input asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+</div>

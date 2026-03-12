@@ -1,0 +1,48 @@
+@model RoundDocumentRequirementFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="RoundProgramId" class="form-label"></label>
+        <select asp-for="RoundProgramId" asp-items="Model.RoundProgramOptions" class="form-select">
+            <option value="">Select round program</option>
+        </select>
+        <span asp-validation-for="RoundProgramId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="DocumentTypeId" class="form-label"></label>
+        <select asp-for="DocumentTypeId" asp-items="Model.DocumentTypeOptions" class="form-select">
+            <option value="">Select document type</option>
+        </select>
+        <span asp-validation-for="DocumentTypeId" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="MaxFiles" class="form-label"></label>
+        <input asp-for="MaxFiles" class="form-control" />
+        <span asp-validation-for="MaxFiles" class="text-danger"></span>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="IsRequired" class="form-check-input" />
+            <label asp-for="IsRequired" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="RequiresNotarization" class="form-check-input" />
+            <label asp-for="RequiresNotarization" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="RequiresOriginalCopy" class="form-check-input" />
+            <label asp-for="RequiresOriginalCopy" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-12">
+        <label asp-for="Notes" class="form-label"></label>
+        <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Notes" class="text-danger"></span>
+    </div>
+</div>

@@ -1,8 +1,85 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Admission Catalog";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="mb-4">
+    <h1 class="display-6">Admission Catalog CRUD</h1>
+    <p class="text-muted mb-0">
+        Các module dưới đây dùng chung query pipeline cho tìm kiếm, sắp xếp và phân trang.
+    </p>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Training Programs</h2>
+                <p class="text-muted">Quản lý chương trình đào tạo.</p>
+                <a class="btn btn-primary" asp-controller="TrainingPrograms" asp-action="Index">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Majors</h2>
+                <p class="text-muted">Quản lý ngành thuộc từng chương trình.</p>
+                <a class="btn btn-primary" asp-controller="Majors" asp-action="Index">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Admission Rounds</h2>
+                <p class="text-muted">Quản lý đợt tuyển sinh theo năm.</p>
+                <a class="btn btn-primary" asp-controller="AdmissionRounds" asp-action="Index">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Admission Methods</h2>
+                <p class="text-muted">Quản lý phương thức xét tuyển.</p>
+                <a class="btn btn-primary" asp-controller="AdmissionMethods" asp-action="Index">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Round Programs</h2>
+                <p class="text-muted">Cấu hình chương trình áp dụng theo đợt.</p>
+                <a class="btn btn-primary" asp-controller="RoundPrograms" asp-action="Index">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Round Admission Methods</h2>
+                <p class="text-muted">Cấu hình phương thức xét tuyển cho từng đợt.</p>
+                <a class="btn btn-primary" asp-controller="RoundAdmissionMethods" asp-action="Index">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Document Types</h2>
+                <p class="text-muted">Danh mục loại giấy tờ.</p>
+                <a class="btn btn-primary" asp-controller="DocumentTypes" asp-action="Index">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Round Document Requirements</h2>
+                <p class="text-muted">Yêu cầu giấy tờ cho từng cấu hình tuyển sinh.</p>
+                <a class="btn btn-primary" asp-controller="RoundDocumentRequirements" asp-action="Index">Open</a>
+            </div>
+        </div>
+    </div>
 </div>
