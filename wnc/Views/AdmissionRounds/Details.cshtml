@@ -1,0 +1,45 @@
+@model AdmissionRoundDetailsViewModel
+@{
+    ViewData["Title"] = "Admission Round Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h3 mb-1">Admission Round Details</h1>
+        <p class="text-muted mb-0">@Model.RoundCode</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Round code</dt>
+    <dd class="col-sm-9">@Model.RoundCode</dd>
+    <dt class="col-sm-3">Round name</dt>
+    <dd class="col-sm-9">@Model.RoundName</dd>
+    <dt class="col-sm-3">Admission year</dt>
+    <dd class="col-sm-9">@Model.AdmissionYear</dd>
+    <dt class="col-sm-3">Start at</dt>
+    <dd class="col-sm-9">@Model.StartAt.ToString("u")</dd>
+    <dt class="col-sm-3">End at</dt>
+    <dd class="col-sm-9">@Model.EndAt.ToString("u")</dd>
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+    <dt class="col-sm-3">Created by</dt>
+    <dd class="col-sm-9">@Model.CreatedByName</dd>
+    <dt class="col-sm-3">Enrollment confirmation</dt>
+    <dd class="col-sm-9">@(Model.AllowEnrollmentConfirmation ? "Enabled" : "Disabled")</dd>
+    <dt class="col-sm-3">Notes</dt>
+    <dd class="col-sm-9">@Model.Notes</dd>
+    <dt class="col-sm-3">Created at</dt>
+    <dd class="col-sm-9">@Model.CreatedAt.ToString("u")</dd>
+    <dt class="col-sm-3">Updated at</dt>
+    <dd class="col-sm-9">@Model.UpdatedAt.ToString("u")</dd>
+</dl>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Delete this admission round?');">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>

@@ -1,0 +1,42 @@
+@model RoundProgramFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="RoundId" class="form-label"></label>
+        <select asp-for="RoundId" asp-items="Model.RoundOptions" class="form-select">
+            <option value="">Select round</option>
+        </select>
+        <span asp-validation-for="RoundId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ProgramId" class="form-label"></label>
+        <select asp-for="ProgramId" asp-items="Model.ProgramOptions" class="form-select">
+            <option value="">Select program</option>
+        </select>
+        <span asp-validation-for="ProgramId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="MajorId" class="form-label"></label>
+        <select asp-for="MajorId" asp-items="Model.MajorOptions" class="form-select">
+            <option value="">All majors</option>
+        </select>
+        <span asp-validation-for="MajorId" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Quota" class="form-label"></label>
+        <input asp-for="Quota" class="form-control" />
+        <span asp-validation-for="Quota" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="PublishedQuota" class="form-label"></label>
+        <input asp-for="PublishedQuota" class="form-control" />
+        <span asp-validation-for="PublishedQuota" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label"></label>
+        <input asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+</div>
