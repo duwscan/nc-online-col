@@ -10,10 +10,10 @@ namespace wnc.Features.AuditLogs;
 public class AuditLogIndexQuery : ListQueryParameters
 {
     public string? EntityName { get; set; }
-    public string? Action { get; set; }
+    public string? AuditAction { get; set; }
 
     public string? NormalizedEntityName => string.IsNullOrWhiteSpace(EntityName) ? null : EntityName.Trim();
-    public string? NormalizedAction => string.IsNullOrWhiteSpace(Action) ? null : Action.Trim();
+    public string? NormalizedAuditAction => string.IsNullOrWhiteSpace(AuditAction) ? null : AuditAction.Trim();
 }
 
 public class AuditLogListItem
@@ -100,9 +100,9 @@ public class AuditLogQueryDefinition : IQueryDefinition<AuditLog, AuditLogListIt
             query = query.Where(x => x.EntityName == request.NormalizedEntityName);
         }
 
-        if (!string.IsNullOrWhiteSpace(request.NormalizedAction))
+        if (!string.IsNullOrWhiteSpace(request.NormalizedAuditAction))
         {
-            query = query.Where(x => x.Action == request.NormalizedAction);
+            query = query.Where(x => x.Action == request.NormalizedAuditAction);
         }
 
         return query;

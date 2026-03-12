@@ -1,8 +1,74 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "CRUD Modules";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="mb-4">
+    <h1 class="display-6">CRUD Modules</h1>
+    <p class="text-muted mb-0">Administrative screens with reusable search, sort, and paging pipeline.</p>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6 col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Application Status Histories</h2>
+                <p class="text-muted">Track status transitions and reasons.</p>
+                <a asp-controller="ApplicationStatusHistories" asp-action="Index" class="btn btn-outline-primary">Open Module</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Application Review Notes</h2>
+                <p class="text-muted">Review notes with visibility controls.</p>
+                <a asp-controller="ApplicationReviewNotes" asp-action="Index" class="btn btn-outline-primary">Open Module</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Application Supplement Requests</h2>
+                <p class="text-muted">Manage requests for additional documents.</p>
+                <a asp-controller="ApplicationSupplementRequests" asp-action="Index" class="btn btn-outline-primary">Open Module</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Enrollment Confirmations</h2>
+                <p class="text-muted">Follow enrollment confirmation status.</p>
+                <a asp-controller="EnrollmentConfirmations" asp-action="Index" class="btn btn-outline-primary">Open Module</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Notifications</h2>
+                <p class="text-muted">CRUD for notification delivery records.</p>
+                <a asp-controller="Notifications" asp-action="Index" class="btn btn-outline-primary">Open Module</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Notification Templates</h2>
+                <p class="text-muted">Template management for channels and subjects.</p>
+                <a asp-controller="NotificationTemplates" asp-action="Index" class="btn btn-outline-primary">Open Module</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Audit Logs</h2>
+                <p class="text-muted">Searchable operational audit history.</p>
+                <a asp-controller="AuditLogs" asp-action="Index" class="btn btn-outline-primary">Open Module</a>
+            </div>
+        </div>
+    </div>
 </div>
