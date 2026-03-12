@@ -214,3 +214,421 @@ erDiagram
 - Partition hoặc archive dữ liệu dài hạn cho `audit_logs`, `auth_logs`, `application_status_histories` khi hệ thống tăng trưởng.
 - Mã hóa hoặc che dữ liệu nhạy cảm như CCCD/CMND, email, số điện thoại ở tầng lưu trữ và hiển thị.
 - Nếu dùng SQL Server hoặc PostgreSQL, nên chuẩn hóa enum trạng thái ở mức application code kết hợp constraint trong DB.
+
+## 4. Thiết kế chi tiết cột dữ liệu cho từng bảng
+
+### 4.1. Quy ước kiểu dữ liệu
+
+Tài liệu này dùng kiểu dữ liệu ở mức logic để có thể triển khai trên PostgreSQL hoặc SQL Server:
+
+- `uuid`: khóa định danh chính.
+- `varchar(n)`: chuỗi ngắn có giới hạn độ dài.
+- `text`: chuỗi dài hoặc nội dung mô tả.
+- `boolean`: giá trị đúng/sai.
+- `int`, `bigint`: số nguyên.
+- `decimal(12,2)` hoặc `decimal(5,2)`: giá trị tài chính hoặc điểm số.
+- `timestamp`: ngày giờ có múi giờ hoặc theo chuẩn UTC.
+- `json/jsonb`: dữ liệu bán cấu trúc phục vụ audit hoặc cấu hình.
+
+Mọi bảng giao dịch nên có chuẩn thời gian lưu ở UTC và tên cột theo `snake_case` để đồng nhất với phần thiết kế hiện tại.
+
+### 4.2. Bảng `users`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh tài khoản |
+| `username` | `varchar(100)` | Có | `NULL` | unique tùy chọn | Tên đăng nhập nội bộ nếu hệ thống dùng username |
+| `email` | `varchar(255)` | Có | `NULL` | unique có điều kiện | Email đăng nhập hoặc nhận thông báo |
+| `phone_number` | `varchar(20)` | Có | `NULL` | unique có điều kiện | Số điện thoại đăng nhập hoặc liên hệ |
+| `password_hash` | `varchar(255)` | Không | none | bắt buộc | Mật khẩu đã băm |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái tài khoản: `ACTIVE`, `LOCKED`, `INACTIVE` |
+| `email_verified_at` | `timestamp` | Có | `NULL` | none | Thời điểm xác thực email |
+| `phone_verified_at` | `timestamp` | Có | `NULL` | none | Thời điểm xác thực số điện thoại |
+| `last_login_at` | `timestamp` | Có | `NULL` | none | Lần đăng nhập gần nhất |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật cuối |
+| `deleted_at` | `timestamp` | Có | `NULL` | none | Phục vụ xóa mềm nếu áp dụng |
+
+### 4.3. Bảng `roles`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh vai trò |
+| `code` | `varchar(50)` | Không | none | unique | Mã vai trò |
+| `name` | `varchar(100)` | Không | none | none | Tên hiển thị của vai trò |
+| `description` | `text` | Có | `NULL` | none | Mô tả nghiệp vụ |
+| `is_system_role` | `boolean` | Không | `true` | none | Phân biệt vai trò hệ thống và vai trò mở rộng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.4. Bảng `user_roles`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh bản ghi gán quyền |
+| `user_id` | `uuid` | Không | none | FK -> `users.id` | Tài khoản được gán vai trò |
+| `role_id` | `uuid` | Không | none | FK -> `roles.id` | Vai trò được gán |
+| `assigned_by` | `uuid` | Có | `NULL` | FK -> `users.id` | Người thực hiện gán quyền |
+| `assigned_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm gán |
+| `revoked_at` | `timestamp` | Có | `NULL` | none | Thời điểm thu hồi nếu có |
+
+Ràng buộc bổ sung: unique trên bộ `user_id`, `role_id`, `revoked_at` hoặc sử dụng cơ chế chỉ cho phép một bản ghi active cho mỗi cặp người dùng - vai trò.
+
+### 4.5. Bảng `password_reset_tokens`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh token |
+| `user_id` | `uuid` | Không | none | FK -> `users.id` | Chủ sở hữu token |
+| `token` | `varchar(255)` | Không | none | unique | Token hoặc OTP đã mã hóa |
+| `token_type` | `varchar(30)` | Không | `RESET_PASSWORD` | check enum | Loại token: OTP, reset link |
+| `expired_at` | `timestamp` | Không | none | none | Hạn sử dụng |
+| `used_at` | `timestamp` | Có | `NULL` | none | Thời điểm đã dùng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm sinh token |
+
+### 4.6. Bảng `auth_logs`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh log đăng nhập |
+| `user_id` | `uuid` | Có | `NULL` | FK -> `users.id` | Người dùng, có thể null nếu login thất bại do chưa xác định tài khoản |
+| `login_identifier` | `varchar(255)` | Không | none | none | Email hoặc số điện thoại được nhập |
+| `status` | `varchar(20)` | Không | none | check enum | `SUCCESS`, `FAILED`, `LOCKED_OUT` |
+| `failure_reason` | `varchar(255)` | Có | `NULL` | none | Lý do thất bại |
+| `ip_address` | `varchar(64)` | Có | `NULL` | none | Địa chỉ IP |
+| `user_agent` | `varchar(500)` | Có | `NULL` | none | Thông tin thiết bị/trình duyệt |
+| `logged_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | index | Thời điểm ghi log |
+
+### 4.7. Bảng `candidates`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh thí sinh |
+| `user_id` | `uuid` | Không | none | FK -> `users.id`, unique | Tài khoản thí sinh |
+| `full_name` | `varchar(255)` | Không | none | none | Họ tên đầy đủ |
+| `date_of_birth` | `date` | Không | none | none | Ngày sinh |
+| `gender` | `varchar(20)` | Có | `NULL` | check enum | Giới tính |
+| `national_id` | `varchar(20)` | Có | `NULL` | unique có điều kiện | CCCD/CMND |
+| `email` | `varchar(255)` | Không | none | none | Email liên hệ nghiệp vụ |
+| `phone_number` | `varchar(20)` | Không | none | none | Số điện thoại liên hệ |
+| `address_line` | `varchar(255)` | Có | `NULL` | none | Địa chỉ chi tiết |
+| `ward` | `varchar(100)` | Có | `NULL` | none | Phường/xã |
+| `district` | `varchar(100)` | Có | `NULL` | none | Quận/huyện |
+| `province_code` | `varchar(20)` | Có | `NULL` | index | Mã tỉnh/thành |
+| `avatar_file_id` | `uuid` | Có | `NULL` | logical ref | Tham chiếu ảnh đại diện nếu lưu chung kho file |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.8. Bảng `candidate_education_profiles`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh hồ sơ học vấn |
+| `candidate_id` | `uuid` | Không | none | FK -> `candidates.id` | Thí sinh sở hữu |
+| `school_name` | `varchar(255)` | Không | none | none | Tên trường học |
+| `education_level` | `varchar(50)` | Không | none | check enum | Bậc học hoặc loại bằng |
+| `graduation_year` | `int` | Có | `NULL` | none | Năm tốt nghiệp |
+| `gpa` | `decimal(5,2)` | Có | `NULL` | none | Điểm trung bình |
+| `academic_rank` | `varchar(50)` | Có | `NULL` | none | Xếp loại học lực |
+| `province_code` | `varchar(20)` | Có | `NULL` | none | Tỉnh/thành của trường |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.9. Bảng `candidate_priority_profiles`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh hồ sơ ưu tiên |
+| `candidate_id` | `uuid` | Không | none | FK -> `candidates.id` | Thí sinh sở hữu |
+| `priority_type` | `varchar(30)` | Không | none | check enum | `REGION`, `CATEGORY`, `SPECIAL_CASE` |
+| `priority_code` | `varchar(50)` | Không | none | none | Mã đối tượng/khu vực ưu tiên |
+| `score_value` | `decimal(5,2)` | Có | `NULL` | none | Số điểm ưu tiên tương ứng |
+| `evidence_file_id` | `uuid` | Có | `NULL` | logical ref | Tệp minh chứng |
+| `notes` | `text` | Có | `NULL` | none | Ghi chú bổ sung |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+
+### 4.10. Bảng `training_programs`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh chương trình đào tạo |
+| `program_code` | `varchar(50)` | Không | none | unique | Mã chương trình |
+| `program_name` | `varchar(255)` | Không | none | none | Tên chương trình |
+| `education_type` | `varchar(50)` | Không | none | check enum | Cao đẳng, liên thông, văn bằng 2, từ xa |
+| `description` | `text` | Có | `NULL` | none | Mô tả chương trình |
+| `tuition_fee` | `decimal(12,2)` | Có | `NULL` | none | Học phí dự kiến |
+| `duration_text` | `varchar(100)` | Có | `NULL` | none | Thời lượng đào tạo |
+| `quota` | `int` | Không | `0` | check > 0 | Chỉ tiêu tổng |
+| `managing_unit` | `varchar(255)` | Có | `NULL` | none | Khoa/đơn vị quản lý |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái hiển thị |
+| `display_order` | `int` | Không | `0` | none | Thứ tự hiển thị |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.11. Bảng `majors`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh ngành học |
+| `program_id` | `uuid` | Không | none | FK -> `training_programs.id` | Chương trình cha |
+| `major_code` | `varchar(50)` | Không | none | unique | Mã ngành |
+| `major_name` | `varchar(255)` | Không | none | none | Tên ngành |
+| `description` | `text` | Có | `NULL` | none | Mô tả ngành |
+| `quota` | `int` | Không | `0` | check >= 0 | Chỉ tiêu ngành |
+| `display_order` | `int` | Không | `0` | none | Thứ tự hiển thị |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái ngành |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.12. Bảng `admission_rounds`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh đợt tuyển sinh |
+| `round_code` | `varchar(50)` | Không | none | unique | Mã đợt tuyển sinh |
+| `round_name` | `varchar(255)` | Không | none | none | Tên đợt |
+| `admission_year` | `int` | Không | none | index | Năm tuyển sinh |
+| `start_at` | `timestamp` | Không | none | check | Ngày giờ bắt đầu nhận hồ sơ |
+| `end_at` | `timestamp` | Không | none | check | Ngày giờ kết thúc nhận hồ sơ |
+| `status` | `varchar(30)` | Không | `DRAFT` | check enum | `DRAFT`, `OPEN`, `PAUSED`, `CLOSED` |
+| `notes` | `text` | Có | `NULL` | none | Ghi chú |
+| `allow_enrollment_confirmation` | `boolean` | Không | `false` | none | Bật/tắt xác nhận nhập học |
+| `created_by` | `uuid` | Có | `NULL` | FK -> `users.id` | Người tạo đợt |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.13. Bảng `admission_methods`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh phương thức xét tuyển |
+| `method_code` | `varchar(50)` | Không | none | unique | Mã phương thức |
+| `method_name` | `varchar(255)` | Không | none | none | Tên phương thức |
+| `description` | `text` | Có | `NULL` | none | Mô tả chi tiết |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái sử dụng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.14. Bảng `round_programs`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh cấu hình đợt-chương trình-ngành |
+| `round_id` | `uuid` | Không | none | FK -> `admission_rounds.id` | Đợt tuyển sinh |
+| `program_id` | `uuid` | Không | none | FK -> `training_programs.id` | Chương trình đào tạo |
+| `major_id` | `uuid` | Có | `NULL` | FK -> `majors.id` | Ngành học nếu tách theo ngành |
+| `quota` | `int` | Không | `0` | check >= 0 | Chỉ tiêu nội bộ của cấu hình |
+| `published_quota` | `int` | Có | `NULL` | check >= 0 | Chỉ tiêu công bố ra bên ngoài |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái áp dụng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.15. Bảng `round_admission_methods`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh cấu hình phương thức xét tuyển |
+| `round_program_id` | `uuid` | Không | none | FK -> `round_programs.id` | Cấu hình đợt/chương trình |
+| `method_id` | `uuid` | Không | none | FK -> `admission_methods.id` | Phương thức áp dụng |
+| `combination_code` | `varchar(50)` | Có | `NULL` | none | Tổ hợp xét tuyển |
+| `minimum_score` | `decimal(5,2)` | Có | `NULL` | none | Điểm sàn hoặc ngưỡng đầu vào |
+| `priority_policy` | `text` | Có | `NULL` | none | Quy tắc cộng điểm ưu tiên |
+| `calculation_rule` | `text` | Có | `NULL` | none | Quy tắc tính điểm |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái áp dụng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+
+### 4.16. Bảng `document_types`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh loại giấy tờ |
+| `document_code` | `varchar(50)` | Không | none | unique | Mã loại giấy tờ |
+| `document_name` | `varchar(255)` | Không | none | none | Tên giấy tờ |
+| `description` | `text` | Có | `NULL` | none | Mô tả |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái sử dụng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+
+### 4.17. Bảng `round_document_requirements`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh cấu hình giấy tờ |
+| `round_program_id` | `uuid` | Không | none | FK -> `round_programs.id` | Cấu hình đợt/chương trình |
+| `document_type_id` | `uuid` | Không | none | FK -> `document_types.id` | Loại giấy tờ |
+| `is_required` | `boolean` | Không | `true` | none | Có bắt buộc hay không |
+| `requires_notarization` | `boolean` | Không | `false` | none | Có yêu cầu công chứng |
+| `requires_original_copy` | `boolean` | Không | `false` | none | Có yêu cầu nộp bản gốc khi nhập học |
+| `max_files` | `int` | Không | `1` | check > 0 | Số file tối đa cho loại giấy tờ |
+| `notes` | `text` | Có | `NULL` | none | Hướng dẫn bổ sung |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+
+### 4.18. Bảng `admission_applications`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh hồ sơ |
+| `application_code` | `varchar(50)` | Không | none | unique, index | Mã hồ sơ tuyển sinh |
+| `candidate_id` | `uuid` | Không | none | FK -> `candidates.id`, index | Thí sinh nộp hồ sơ |
+| `round_program_id` | `uuid` | Không | none | FK -> `round_programs.id`, index | Cấu hình tuyển sinh áp dụng |
+| `current_status` | `varchar(30)` | Không | `DRAFT` | check enum, index | Trạng thái hiện tại |
+| `submission_number` | `int` | Không | `0` | check >= 0 | Số lần nộp hoặc nộp lại |
+| `submitted_at` | `timestamp` | Có | `NULL` | none | Thời điểm nộp lần đầu |
+| `last_resubmitted_at` | `timestamp` | Có | `NULL` | none | Thời điểm nộp lại gần nhất |
+| `review_deadline_at` | `timestamp` | Có | `NULL` | none | Hạn xử lý hoặc hạn bổ sung |
+| `rejection_reason` | `text` | Có | `NULL` | none | Lý do từ chối cuối cùng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo hồ sơ |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+| `cancelled_at` | `timestamp` | Có | `NULL` | none | Thời điểm hủy |
+
+Ràng buộc bổ sung: nên unique theo nghiệp vụ trên bộ `candidate_id`, `round_program_id` nếu mỗi thí sinh chỉ được có một hồ sơ cho mỗi cấu hình tuyển sinh.
+
+### 4.19. Bảng `application_preferences`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh nguyện vọng |
+| `application_id` | `uuid` | Không | none | FK -> `admission_applications.id` | Hồ sơ cha |
+| `priority_order` | `int` | Không | none | check > 0 | Thứ tự nguyện vọng |
+| `program_id` | `uuid` | Không | none | FK -> `training_programs.id` | Chương trình mong muốn |
+| `major_id` | `uuid` | Có | `NULL` | FK -> `majors.id` | Ngành tương ứng |
+| `method_id` | `uuid` | Có | `NULL` | FK -> `admission_methods.id` | Phương thức xét tuyển cho nguyện vọng |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái nguyện vọng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+
+### 4.20. Bảng `application_documents`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh tài liệu |
+| `application_id` | `uuid` | Không | none | FK -> `admission_applications.id`, index | Hồ sơ cha |
+| `document_type_id` | `uuid` | Không | none | FK -> `document_types.id` | Loại giấy tờ |
+| `file_name` | `varchar(255)` | Không | none | none | Tên tệp gốc |
+| `storage_path` | `varchar(500)` | Không | none | none | Đường dẫn hoặc object key trên storage |
+| `mime_type` | `varchar(100)` | Không | none | none | Kiểu nội dung tệp |
+| `file_size` | `bigint` | Không | none | check >= 0 | Kích thước tệp |
+| `checksum` | `varchar(128)` | Có | `NULL` | none | Giá trị băm để kiểm tra toàn vẹn |
+| `uploaded_by` | `uuid` | Có | `NULL` | FK -> `users.id` | Người tải lên |
+| `uploaded_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tải lên |
+| `validation_status` | `varchar(30)` | Không | `PENDING` | check enum | `PENDING`, `VALID`, `INVALID` |
+| `is_latest` | `boolean` | Không | `true` | none | Đánh dấu file đang hiệu lực mới nhất |
+
+### 4.21. Bảng `application_status_histories`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh lịch sử trạng thái |
+| `application_id` | `uuid` | Không | none | FK -> `admission_applications.id`, index | Hồ sơ cha |
+| `from_status` | `varchar(30)` | Có | `NULL` | check enum | Trạng thái trước đó |
+| `to_status` | `varchar(30)` | Không | none | check enum | Trạng thái mới |
+| `changed_by` | `uuid` | Có | `NULL` | FK -> `users.id` | Người hoặc hệ thống thực hiện |
+| `changed_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | index | Thời điểm thay đổi |
+| `reason` | `text` | Có | `NULL` | none | Lý do thay đổi |
+| `public_note` | `text` | Có | `NULL` | none | Ghi chú hiển thị cho thí sinh |
+| `internal_note` | `text` | Có | `NULL` | none | Ghi chú nội bộ |
+
+### 4.22. Bảng `application_review_notes`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh ghi chú |
+| `application_id` | `uuid` | Không | none | FK -> `admission_applications.id` | Hồ sơ cha |
+| `author_user_id` | `uuid` | Không | none | FK -> `users.id` | Người ghi chú |
+| `note_type` | `varchar(30)` | Không | `GENERAL` | check enum | `GENERAL`, `REVIEW`, `RESULT` |
+| `content` | `text` | Không | none | none | Nội dung ghi chú |
+| `is_visible_to_candidate` | `boolean` | Không | `false` | none | Có hiển thị cho thí sinh hay không |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+
+### 4.23. Bảng `application_supplement_requests`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh yêu cầu bổ sung |
+| `application_id` | `uuid` | Không | none | FK -> `admission_applications.id` | Hồ sơ cha |
+| `requested_by` | `uuid` | Không | none | FK -> `users.id` | Cán bộ yêu cầu |
+| `requested_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm yêu cầu |
+| `due_at` | `timestamp` | Có | `NULL` | none | Hạn thí sinh phải bổ sung |
+| `request_content` | `text` | Không | none | none | Nội dung cần bổ sung |
+| `status` | `varchar(30)` | Không | `OPEN` | check enum | `OPEN`, `SUBMITTED`, `EXPIRED`, `CLOSED` |
+| `resolved_at` | `timestamp` | Có | `NULL` | none | Thời điểm hoàn tất |
+
+### 4.24. Bảng `enrollment_confirmations`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh xác nhận nhập học |
+| `application_id` | `uuid` | Không | none | FK -> `admission_applications.id`, unique | Hồ sơ được xác nhận |
+| `confirmed_by_candidate_at` | `timestamp` | Có | `NULL` | none | Thời điểm thí sinh xác nhận |
+| `confirmation_status` | `varchar(30)` | Không | `PENDING` | check enum | `PENDING`, `CONFIRMED`, `DECLINED`, `EXPIRED` |
+| `notes` | `text` | Có | `NULL` | none | Ghi chú thêm |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.25. Bảng `notifications`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh thông báo |
+| `user_id` | `uuid` | Không | none | FK -> `users.id`, index | Người nhận |
+| `application_id` | `uuid` | Có | `NULL` | FK -> `admission_applications.id` | Hồ sơ liên quan |
+| `template_id` | `uuid` | Có | `NULL` | FK -> `notification_templates.id` | Mẫu thông báo sử dụng |
+| `channel` | `varchar(30)` | Không | `IN_APP` | check enum | `EMAIL`, `IN_APP`, `SMS`, `ZALO` |
+| `title` | `varchar(255)` | Không | none | none | Tiêu đề |
+| `content` | `text` | Không | none | none | Nội dung gửi đi |
+| `status` | `varchar(30)` | Không | `PENDING` | check enum | `PENDING`, `SENT`, `FAILED`, `READ` |
+| `sent_at` | `timestamp` | Có | `NULL` | none | Thời điểm gửi thành công |
+| `read_at` | `timestamp` | Có | `NULL` | none | Thời điểm người dùng đọc |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+
+### 4.26. Bảng `notification_templates`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh mẫu thông báo |
+| `template_code` | `varchar(50)` | Không | none | unique | Mã mẫu |
+| `template_name` | `varchar(255)` | Không | none | none | Tên mẫu |
+| `channel` | `varchar(30)` | Không | none | check enum | Kênh áp dụng |
+| `subject_template` | `varchar(255)` | Có | `NULL` | none | Tiêu đề mẫu |
+| `body_template` | `text` | Không | none | none | Nội dung mẫu |
+| `status` | `varchar(30)` | Không | `ACTIVE` | check enum | Trạng thái sử dụng |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm tạo |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật |
+
+### 4.27. Bảng `audit_logs`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh audit log |
+| `actor_user_id` | `uuid` | Có | `NULL` | FK -> `users.id` | Người thực hiện thao tác |
+| `entity_name` | `varchar(100)` | Không | none | index | Tên bảng hoặc đối tượng nghiệp vụ |
+| `entity_id` | `varchar(100)` | Có | `NULL` | index | Định danh bản ghi bị tác động |
+| `action` | `varchar(50)` | Không | none | index | `CREATE`, `UPDATE`, `DELETE`, `ASSIGN_ROLE`, `EXPORT` |
+| `old_data` | `json/jsonb` | Có | `NULL` | none | Dữ liệu trước thay đổi |
+| `new_data` | `json/jsonb` | Có | `NULL` | none | Dữ liệu sau thay đổi |
+| `ip_address` | `varchar(64)` | Có | `NULL` | none | Địa chỉ IP thực hiện |
+| `created_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | index | Thời điểm ghi log |
+
+### 4.28. Bảng `system_configs`
+
+| Cột | Kiểu dữ liệu | Null | Mặc định | Ràng buộc | Ý nghĩa |
+| --- | --- | --- | --- | --- | --- |
+| `id` | `uuid` | Không | sinh tự động | PK | Định danh cấu hình |
+| `config_key` | `varchar(100)` | Không | none | unique | Khóa cấu hình |
+| `config_value` | `text` | Không | none | none | Giá trị cấu hình |
+| `description` | `text` | Có | `NULL` | none | Mô tả |
+| `updated_by` | `uuid` | Có | `NULL` | FK -> `users.id` | Người cập nhật |
+| `updated_at` | `timestamp` | Không | `CURRENT_TIMESTAMP` | none | Thời điểm cập nhật cuối |
+
+### 4.29. Gợi ý chỉ mục chính
+
+- `users(email)`, `users(phone_number)`, `users(status)`
+- `candidates(user_id)`, `candidates(national_id)`, `candidates(province_code)`
+- `training_programs(program_code)`, `majors(program_id, major_code)`
+- `admission_rounds(admission_year, status, start_at, end_at)`
+- `round_programs(round_id, program_id, major_id)` unique
+- `admission_applications(application_code)` unique
+- `admission_applications(candidate_id, round_program_id)` unique theo quy tắc nghiệp vụ
+- `admission_applications(current_status, submitted_at)`
+- `application_documents(application_id, document_type_id, is_latest)`
+- `application_status_histories(application_id, changed_at)`
+- `notifications(user_id, status, created_at)`
+- `audit_logs(entity_name, entity_id, created_at)`
