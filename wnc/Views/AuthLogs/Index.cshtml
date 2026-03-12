@@ -1,0 +1,134 @@
+@model wnc.Features.IdentityAccess.AuthLogs.AuthLogsIndexViewModel
+
+@{
+    ViewData["Title"] = "Auth Logs";
+
+    string NextDirection(string sortBy) =>
+        string.Equals(Model.Query.SortBy, sortBy, StringComparison.OrdinalIgnoreCase) && !Model.Query.IsDescending()
+            ? "desc"
+            : "asc";
+
+    string SortIndicator(string sortBy)
+    {
+        if (!string.Equals(Model.Query.SortBy, sortBy, StringComparison.OrdinalIgnoreCase))
+        {
+            return string.Empty;
+        }
+
+        return Model.Query.IsDescending() ? "▼" : "▲";
+    }
+
+    Dictionary<string, string> SortRoute(string sortBy) => Model.Query.BuildRouteValues(sortBy, NextDirection(sortBy), 1);
+    var userSortRoute = SortRoute("user");
+    var identifierSortRoute = SortRoute("loginIdentifier");
+    var statusSortRoute = SortRoute("status");
+    var ipSortRoute = SortRoute("ipAddress");
+    var loggedAtSortRoute = SortRoute("loggedAt");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Auth logs</h1>
+        <p class="text-muted mb-0">Audit login attempts with filterable status and time range.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">Create log</a>
+</div>
+
+<form method="get" class="card shadow-sm mb-4">
+    <div class="card-body row g-3 align-items-end">
+        <div class="col-lg-3">
+            <label asp-for="Query.SearchTerm" class="form-label">Search</label>
+            <input asp-for="Query.SearchTerm" class="form-control" placeholder="Identifier, IP or reason" />
+        </div>
+        <div class="col-lg-3">
+            <label asp-for="Query.UserId" class="form-label">User</label>
+            <select asp-for="Query.UserId" asp-items="Model.UserOptions" class="form-select"></select>
+        </div>
+        <div class="col-lg-2">
+            <label asp-for="Query.Status" class="form-label">Status</label>
+            <select asp-for="Query.Status" asp-items="Model.StatusOptions" class="form-select">
+                <option value="">All statuses</option>
+            </select>
+        </div>
+        <div class="col-lg-2">
+            <label asp-for="Query.LoggedFrom" class="form-label">From</label>
+            <input name="LoggedFrom" type="date" value="@(Model.Query.LoggedFrom?.ToString("yyyy-MM-dd"))" class="form-control" />
+        </div>
+        <div class="col-lg-2">
+            <label asp-for="Query.LoggedTo" class="form-label">To</label>
+            <input name="LoggedTo" type="date" value="@(Model.Query.LoggedTo?.ToString("yyyy-MM-dd"))" class="form-control" />
+        </div>
+        <div class="col-lg-2">
+            <label asp-for="Query.PageSize" class="form-label">Page size</label>
+            <select asp-for="Query.PageSize" class="form-select">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+        <div class="col-lg-1 d-grid">
+            <button type="submit" class="btn btn-outline-primary">Apply</button>
+        </div>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+            <tr>
+                <th><a asp-action="Index" asp-all-route-data="userSortRoute" class="text-decoration-none">User @SortIndicator("user")</a></th>
+                <th><a asp-action="Index" asp-all-route-data="identifierSortRoute" class="text-decoration-none">Identifier @SortIndicator("loginIdentifier")</a></th>
+                <th><a asp-action="Index" asp-all-route-data="statusSortRoute" class="text-decoration-none">Status @SortIndicator("status")</a></th>
+                <th><a asp-action="Index" asp-all-route-data="ipSortRoute" class="text-decoration-none">IP address @SortIndicator("ipAddress")</a></th>
+                <th><a asp-action="Index" asp-all-route-data="loggedAtSortRoute" class="text-decoration-none">Logged at @SortIndicator("loggedAt")</a></th>
+                <th class="text-end">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if (Model.Result.Items.Count == 0)
+            {
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No auth logs matched the current query.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in Model.Result.Items)
+                {
+                    <tr>
+                        <td>@(item.UserDisplay ?? "Anonymous")</td>
+                        <td>
+                            <div class="fw-semibold">@item.LoginIdentifier</div>
+                            <div class="text-muted small">@item.FailureReason</div>
+                        </td>
+                        <td>
+                            <span class="badge text-bg-@(item.Status == "SUCCESS" ? "success" : "danger")">@item.Status</span>
+                        </td>
+                        <td>@(item.IpAddress ?? "-")</td>
+                        <td>@item.LoggedAt.ToString("g")</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <span class="text-muted">Showing @Model.Result.StartItem-@Model.Result.EndItem of @Model.Result.TotalCount</span>
+        <div class="btn-group">
+            <a asp-action="Index"
+               asp-all-route-data="Model.Query.BuildRouteValues(page: Model.Result.Page - 1)"
+               class="btn btn-outline-secondary @(Model.Result.HasPreviousPage ? string.Empty : "disabled")">Previous</a>
+            <span class="btn btn-outline-secondary disabled">Page @Model.Result.Page / @Model.Result.TotalPages</span>
+            <a asp-action="Index"
+               asp-all-route-data="Model.Query.BuildRouteValues(page: Model.Result.Page + 1)"
+               class="btn btn-outline-secondary @(Model.Result.HasNextPage ? string.Empty : "disabled")">Next</a>
+        </div>
+    </div>
+</div>

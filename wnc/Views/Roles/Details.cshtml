@@ -1,0 +1,60 @@
+@model wnc.Features.IdentityAccess.Roles.RoleDetailsViewModel
+
+@{
+    ViewData["Title"] = "Role Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Role details</h1>
+        <p class="text-muted mb-0">@Model.Code</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Delete</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to list</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Code</dt>
+                    <dd class="col-sm-8">@Model.Code</dd>
+                    <dt class="col-sm-4">Name</dt>
+                    <dd class="col-sm-8">@Model.Name</dd>
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">@Model.Description</dd>
+                    <dt class="col-sm-4">System role</dt>
+                    <dd class="col-sm-8">@(Model.IsSystemRole ? "Yes" : "No")</dd>
+                    <dt class="col-sm-4">Created</dt>
+                    <dd class="col-sm-8">@Model.CreatedAt.ToString("g")</dd>
+                    <dt class="col-sm-4">Updated</dt>
+                    <dd class="col-sm-8">@Model.UpdatedAt.ToString("g")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">Assignments</h2>
+                @if (Model.Assignments.Count == 0)
+                {
+                    <p class="text-muted mb-0">No assignments recorded.</p>
+                }
+                else
+                {
+                    <ul class="mb-0">
+                        @foreach (var assignment in Model.Assignments)
+                        {
+                            <li>@assignment</li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using Microsoft.AspNetCore.Routing;
 
 namespace wnc.Infrastructure.Queries;
 
@@ -25,9 +24,9 @@ public abstract class ListQueryParameters
 
     public bool IsDescending() => string.Equals(SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
 
-    public RouteValueDictionary BuildRouteValues(string? sortBy = null, string? sortDirection = null, int? page = null)
+    public Dictionary<string, string> BuildRouteValues(string? sortBy = null, string? sortDirection = null, int? page = null)
     {
-        var values = new RouteValueDictionary();
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
         foreach (var property in properties)
@@ -58,8 +57,8 @@ public abstract class ListQueryParameters
             values[property.Name] = value switch
             {
                 DateTime dateTime => dateTime.ToString("yyyy-MM-dd"),
-                bool boolean => boolean,
-                _ => value
+                bool boolean => boolean.ToString().ToLowerInvariant(),
+                _ => value.ToString() ?? string.Empty
             };
         }
 

@@ -1,0 +1,41 @@
+@model wnc.Features.IdentityAccess.AuthLogs.AuthLogFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="UserId" class="form-label"></label>
+        <select asp-for="UserId" asp-items="Model.UserOptions" class="form-select"></select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="LoginIdentifier" class="form-label"></label>
+        <input asp-for="LoginIdentifier" class="form-control" />
+        <span asp-validation-for="LoginIdentifier" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" asp-items="Model.StatusOptions" class="form-select"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="IpAddress" class="form-label"></label>
+        <input asp-for="IpAddress" class="form-control" />
+        <span asp-validation-for="IpAddress" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="LoggedAt" class="form-label"></label>
+        <input asp-for="LoggedAt" class="form-control" type="datetime-local" />
+        <span asp-validation-for="LoggedAt" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="FailureReason" class="form-label"></label>
+        <input asp-for="FailureReason" class="form-control" />
+        <span asp-validation-for="FailureReason" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="UserAgent" class="form-label"></label>
+        <textarea asp-for="UserAgent" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="UserAgent" class="text-danger"></span>
+    </div>
+</div>

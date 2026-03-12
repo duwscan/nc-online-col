@@ -1,0 +1,36 @@
+@model wnc.Features.IdentityAccess.Users.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "Delete User";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Delete user</h1>
+        <p class="text-muted mb-0">This action performs a soft delete by marking the user as deleted.</p>
+    </div>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to details</a>
+</div>
+
+<div class="card border-danger shadow-sm">
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <p class="mb-3">Confirm soft delete for the following account:</p>
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Username</dt>
+            <dd class="col-sm-9">@Model.Username</dd>
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+            <dt class="col-sm-3">Phone number</dt>
+            <dd class="col-sm-9">@Model.PhoneNumber</dd>
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">@Model.Status</dd>
+        </dl>
+    </div>
+    <div class="card-footer d-flex justify-content-end gap-2">
+        <form asp-action="Delete" method="post">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="btn btn-danger">Mark as deleted</button>
+        </form>
+    </div>
+</div>

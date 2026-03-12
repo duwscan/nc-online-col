@@ -2,7 +2,46 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="mb-4">
+    <h1 class="display-5">Identity Access CRUD</h1>
+    <p class="lead text-muted">Operational modules for `users`, `roles`, `user_roles` and `auth_logs` with search, sort and paging.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">Users</h2>
+                <p class="text-muted">Create, update, soft delete and inspect account activity.</p>
+                <a asp-controller="Users" asp-action="Index" class="btn btn-outline-primary">Open users</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">Roles</h2>
+                <p class="text-muted">Manage access role catalogs and assignment counts.</p>
+                <a asp-controller="Roles" asp-action="Index" class="btn btn-outline-primary">Open roles</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">User Roles</h2>
+                <p class="text-muted">Assign, edit and revoke user-role relationships.</p>
+                <a asp-controller="UserRoles" asp-action="Index" class="btn btn-outline-primary">Open assignments</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">Auth Logs</h2>
+                <p class="text-muted">Browse and maintain authentication audit data.</p>
+                <a asp-controller="AuthLogs" asp-action="Index" class="btn btn-outline-primary">Open auth logs</a>
+            </div>
+        </div>
+    </div>
 </div>
