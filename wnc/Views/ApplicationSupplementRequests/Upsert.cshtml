@@ -1,0 +1,57 @@
+@model ApplicationSupplementRequestFormModel
+@{
+    var actionName = ViewContext.RouteData.Values["action"]?.ToString() ?? "Create";
+    var isEdit = string.Equals(actionName, "Edit", StringComparison.OrdinalIgnoreCase);
+    ViewData["Title"] = isEdit ? "Edit Application Supplement Request" : "Create Application Supplement Request";
+    var routeId = ViewContext.RouteData.Values["id"];
+}
+
+<h1 class="h3 mb-4">@ViewData["Title"]</h1>
+
+<form asp-action="@actionName" asp-route-id="@routeId" method="post" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-md-6">
+        <label asp-for="ApplicationId" class="form-label"></label>
+        <select asp-for="ApplicationId" asp-items="Model.ApplicationOptions" class="form-select"></select>
+        <span asp-validation-for="ApplicationId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="RequestedBy" class="form-label"></label>
+        <select asp-for="RequestedBy" asp-items="Model.UserOptions" class="form-select"></select>
+        <span asp-validation-for="RequestedBy" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="RequestedAt" class="form-label"></label>
+        <input asp-for="RequestedAt" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+        <span asp-validation-for="RequestedAt" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DueAt" class="form-label"></label>
+        <input asp-for="DueAt" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+        <span asp-validation-for="DueAt" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="ResolvedAt" class="form-label"></label>
+        <input asp-for="ResolvedAt" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+        <span asp-validation-for="ResolvedAt" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Status" class="form-label"></label>
+        <input asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="RequestContent" class="form-label"></label>
+        <textarea asp-for="RequestContent" class="form-control" rows="8"></textarea>
+        <span asp-validation-for="RequestContent" class="text-danger"></span>
+    </div>
+    <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,35 @@
+@model NotificationTemplate
+@{
+    ViewData["Title"] = "Notification Template Details";
+}
+
+<h1 class="h3 mb-4">Notification Template Details</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Template code</dt>
+    <dd class="col-sm-9">@Model.TemplateCode</dd>
+    <dt class="col-sm-3">Template name</dt>
+    <dd class="col-sm-9">@Model.TemplateName</dd>
+    <dt class="col-sm-3">Channel</dt>
+    <dd class="col-sm-9">@Model.Channel</dd>
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+    <dt class="col-sm-3">Subject template</dt>
+    <dd class="col-sm-9">@(Model.SubjectTemplate ?? "-")</dd>
+    <dt class="col-sm-3">Body template</dt>
+    <dd class="col-sm-9" style="white-space: pre-wrap">@Model.BodyTemplate</dd>
+    <dt class="col-sm-3">Created at</dt>
+    <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+    <dt class="col-sm-3">Updated at</dt>
+    <dd class="col-sm-9">@Model.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+    <dt class="col-sm-3">Linked notifications</dt>
+    <dd class="col-sm-9">@Model.Notifications.Count</dd>
+</dl>
+
+<div class="d-flex gap-2">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Delete this record?');">Delete</button>
+    </form>
+</div>

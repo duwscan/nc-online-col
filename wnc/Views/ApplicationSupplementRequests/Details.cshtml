@@ -1,0 +1,31 @@
+@model ApplicationSupplementRequest
+@{
+    ViewData["Title"] = "Application Supplement Request Details";
+}
+
+<h1 class="h3 mb-4">Application Supplement Request Details</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Application</dt>
+    <dd class="col-sm-9">@Model.Application.ApplicationCode</dd>
+    <dt class="col-sm-3">Requested by</dt>
+    <dd class="col-sm-9">@(Model.RequestedByUser.Username ?? Model.RequestedByUser.Email)</dd>
+    <dt class="col-sm-3">Requested at</dt>
+    <dd class="col-sm-9">@Model.RequestedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+    <dt class="col-sm-3">Due at</dt>
+    <dd class="col-sm-9">@(Model.DueAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</dd>
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+    <dt class="col-sm-3">Resolved at</dt>
+    <dd class="col-sm-9">@(Model.ResolvedAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</dd>
+    <dt class="col-sm-3">Request content</dt>
+    <dd class="col-sm-9" style="white-space: pre-wrap">@Model.RequestContent</dd>
+</dl>
+
+<div class="d-flex gap-2">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Delete this record?');">Delete</button>
+    </form>
+</div>
