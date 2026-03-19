@@ -1,130 +1,142 @@
-@model ListPageViewModel<ApplicationReviewNoteIndexQuery, ApplicationReviewNoteListItem>
 @{
     ViewData["Title"] = "Application Review Notes";
 }
 
 @await Html.PartialAsync("_StatusMessage")
+@Html.AntiForgeryToken()
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h3 mb-1">Application Review Notes</h1>
         <p class="text-muted mb-0">Review notes with reusable search, filter, sort, and paging.</p>
     </div>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        Create New
+    </button>
 </div>
 
-<form method="get" class="row g-3 mb-4">
-    <input type="hidden" name="Page" value="1" />
+<div class="row g-3 mb-4">
     <div class="col-md-4">
         <label class="form-label" for="search">Search</label>
-        <input id="search" name="Search" value="@Model.Query.Search" class="form-control" placeholder="Application code, author, content..." />
+        <input id="search" name="Search" class="form-control" placeholder="Application code, author, content..." />
     </div>
     <div class="col-md-2">
         <label class="form-label" for="noteType">Note type</label>
-        <input id="noteType" name="NoteType" value="@Model.Query.NoteType" class="form-control" />
+        <input id="noteType" name="NoteType" class="form-control" />
     </div>
     <div class="col-md-2">
         <label class="form-label" for="visibleToCandidate">Visible</label>
         <select id="visibleToCandidate" name="VisibleToCandidate" class="form-select">
             <option value="">All</option>
-            <option value="true" selected="@(Model.Query.VisibleToCandidate == true)">Yes</option>
-            <option value="false" selected="@(Model.Query.VisibleToCandidate == false)">No</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
         </select>
     </div>
     <div class="col-md-2">
         <label class="form-label" for="sortBy">Sort by</label>
         <select id="sortBy" name="SortBy" class="form-select">
-            <option value="createdat" selected="@((Model.Query.SortBy ?? "createdat") == "createdat")">Created at</option>
-            <option value="application" selected="@(Model.Query.SortBy == "application")">Application</option>
-            <option value="notetype" selected="@(Model.Query.SortBy == "notetype")">Note type</option>
-            <option value="visible" selected="@(Model.Query.SortBy == "visible")">Visible</option>
+            <option value="createdat">Created at</option>
+            <option value="application">Application</option>
+            <option value="notetype">Note type</option>
+            <option value="visible">Visible</option>
         </select>
     </div>
     <div class="col-md-2">
         <label class="form-label" for="pageSize">Page size</label>
         <select id="pageSize" name="PageSize" class="form-select">
-            <option value="10" selected="@(Model.Query.PageSize == 10)">10</option>
-            <option value="20" selected="@(Model.Query.PageSize == 20)">20</option>
-            <option value="50" selected="@(Model.Query.PageSize == 50)">50</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
         </select>
     </div>
     <div class="col-12 d-flex justify-content-between align-items-center">
         <div class="form-check">
-            <input id="descending" name="Descending" value="true" checked="@Model.Query.Descending" class="form-check-input" type="checkbox" />
+            <input id="descending" name="Descending" value="true" class="form-check-input" type="checkbox" />
             <label for="descending" class="form-check-label">Descending</label>
         </div>
         <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-outline-primary">Apply</button>
-            <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+            <button type="button" id="searchBtn" class="btn btn-outline-primary">Apply</button>
+            <button type="button" id="resetBtn" class="btn btn-outline-secondary">Reset</button>
         </div>
     </div>
-</form>
+</div>
 
 <div class="table-responsive">
     <table class="table table-striped align-middle">
         <thead>
-        <tr>
-            <th>Application</th>
-            <th>Type</th>
-            <th>Author</th>
-            <th>Visible</th>
-            <th>Created at</th>
-            <th>Content</th>
-            <th class="text-end">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        @if (Model.Results.Items.Count == 0)
-        {
             <tr>
-                <td colspan="7" class="text-center text-muted py-4">No records found.</td>
+                <th>Application</th>
+                <th>Type</th>
+                <th>Author</th>
+                <th>Visible</th>
+                <th>Created at</th>
+                <th>Content</th>
+                <th class="text-end">Actions</th>
             </tr>
-        }
-        else
-        {
-            @foreach (var item in Model.Results.Items)
-            {
-                <tr>
-                    <td>@item.ApplicationCode</td>
-                    <td>@item.NoteType</td>
-                    <td>@item.AuthorDisplay</td>
-                    <td>@(item.IsVisibleToCandidate ? "Yes" : "No")</td>
-                    <td>@item.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>@item.ContentPreview</td>
-                    <td class="text-end">
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline">
-                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this record?');">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        }
+        </thead>
+        <tbody id="notesTbody">
         </tbody>
     </table>
 </div>
 
-<div class="d-flex justify-content-between align-items-center">
-    <span class="text-muted">Page @Model.Results.Page of @Model.Results.TotalPages, total @Model.Results.TotalCount records</span>
-    <div class="btn-group">
-        <a asp-action="Index"
-           asp-route-page="@(Model.Results.Page - 1)"
-           asp-route-pageSize="@Model.Results.PageSize"
-           asp-route-search="@Model.Query.Search"
-           asp-route-noteType="@Model.Query.NoteType"
-           asp-route-visibleToCandidate="@Model.Query.VisibleToCandidate"
-           asp-route-sortBy="@Model.Query.SortBy"
-           asp-route-descending="@Model.Query.Descending"
-           class="btn btn-outline-secondary @(Model.Results.HasPreviousPage ? string.Empty : "disabled")">Previous</a>
-        <a asp-action="Index"
-           asp-route-page="@(Model.Results.Page + 1)"
-           asp-route-pageSize="@Model.Results.PageSize"
-           asp-route-search="@Model.Query.Search"
-           asp-route-noteType="@Model.Query.NoteType"
-           asp-route-visibleToCandidate="@Model.Query.VisibleToCandidate"
-           asp-route-sortBy="@Model.Query.SortBy"
-           asp-route-descending="@Model.Query.Descending"
-           class="btn btn-outline-secondary @(Model.Results.HasNextPage ? string.Empty : "disabled")">Next</a>
+<div id="pager" class="d-flex justify-content-between align-items-center">
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create Application Review Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createForm" class="row g-3">
+                    <div id="createErrorSummary" class="alert alert-danger d-none col-12"></div>
+                    <div class="col-md-6">
+                        <label for="createApplicationId" class="form-label">Application</label>
+                        <select id="createApplicationId" name="ApplicationId" class="form-select" required>
+                            <option value="">Loading...</option>
+                        </select>
+                        <span id="createApplicationIdError" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="createAuthorUserId" class="form-label">Author</label>
+                        <select id="createAuthorUserId" name="AuthorUserId" class="form-select" required>
+                            <option value="">Loading...</option>
+                        </select>
+                        <span id="createAuthorUserIdError" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="createNoteType" class="form-label">Note type</label>
+                        <input id="createNoteType" name="NoteType" class="form-control" value="GENERAL" required />
+                        <span id="createNoteTypeError" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="createCreatedAt" class="form-label">Created at</label>
+                        <input id="createCreatedAt" name="CreatedAt" class="form-control" type="datetime-local" required />
+                        <span id="createCreatedAtError" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input id="createIsVisibleToCandidate" name="IsVisibleToCandidate" class="form-check-input" type="checkbox" />
+                            <label for="createIsVisibleToCandidate" class="form-check-label">Visible to candidate</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="createContent" class="form-label">Content</label>
+                        <textarea id="createContent" name="Content" class="form-control" rows="8" required></textarea>
+                        <span id="createContentError" class="text-danger"></span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="createSaveBtn" class="btn btn-primary">Save</button>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/applicationReviewNotes.js" asp-append-version="true"></script>
+}
