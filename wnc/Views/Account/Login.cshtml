@@ -1,0 +1,81 @@
+@model wnc.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Dang nhap";
+}
+
+<section class="login-shell">
+    <div class="login-hero">
+        <p class="login-eyebrow">NC Online College</p>
+        <h1>Dang nhap vao cong tuyen sinh.</h1>
+        <p class="login-copy">
+            Theo doi ho so, cap nhat nguyen vong va xu ly cac buoc xac nhan nhap hoc trong mot noi duy nhat.
+        </p>
+
+        <div class="login-feature-list">
+            <div class="login-feature-card">
+                <span>01</span>
+                <strong>Kiem tra trang thai ho so</strong>
+                <p>Xem tien do xet duyet va cac yeu cau bo sung theo tung dot.</p>
+            </div>
+            <div class="login-feature-card">
+                <span>02</span>
+                <strong>Nhan thong bao tap trung</strong>
+                <p>Khong bo lo lich xac nhan nhap hoc, le phi va thong tin giay to.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-panel">
+        <div class="login-card">
+            <div class="login-card-header">
+                <h2>Chao mung tro lai</h2>
+                <p>Su dung tai khoan duoc nha truong hoac he thong cap.</p>
+            </div>
+
+            @if (TempData["LoginMessage"] is string message)
+            {
+                <div class="alert alert-success" role="alert">
+                    @message
+                </div>
+            }
+
+            <form asp-action="Login" method="post" class="login-form" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="UserName" class="form-label"></label>
+                    <input asp-for="UserName" class="form-control form-control-lg login-input" placeholder="vd: sinhvien@nc.edu.vn" />
+                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label asp-for="Password" class="form-label mb-0"></label>
+                        <a href="#" class="login-link">Quen mat khau?</a>
+                    </div>
+                    <input asp-for="Password" class="form-control form-control-lg login-input" placeholder="Nhap mat khau" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="login-options">
+                    <div class="form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label"></label>
+                    </div>
+                    <span class="login-caption">Khuyen nghi khong bat tren may cong cong.</span>
+                </div>
+
+                <button type="submit" class="btn login-submit">Dang nhap</button>
+            </form>
+
+            <div class="login-footer-note">
+                Chua co tai khoan?
+                <a href="#" class="login-link">Lien he phong tuyen sinh</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
