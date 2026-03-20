@@ -13,6 +13,8 @@
 
     <ItemGroup>
       <Folder Include="docs\" />
+      <Folder Include="Features\Admin\Authentication\" />
+      <Folder Include="Features\Students\Authentication\" />
     </ItemGroup>
 
     <ItemGroup>
