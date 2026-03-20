@@ -12,8 +12,8 @@ using wnc.Data;
 namespace wnc.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260312162211_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260320093210_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,7 +89,7 @@ namespace wnc.Migrations
 
                     b.ToTable("admission_applications", null, t =>
                         {
-                            t.HasCheckConstraint("ck_admission_applications_submission_number", "[submission_number] >= 0");
+                            t.HasCheckConstraint("ck_admission_applications_submission_number", "[SubmissionNumber] >= 0");
                         });
                 });
 
@@ -227,7 +227,7 @@ namespace wnc.Migrations
 
                     b.ToTable("admission_rounds", null, t =>
                         {
-                            t.HasCheckConstraint("ck_admission_rounds_time", "[start_at] < [end_at]");
+                            t.HasCheckConstraint("ck_admission_rounds_time", "[StartAt] < [EndAt]");
                         });
                 });
 
@@ -356,7 +356,7 @@ namespace wnc.Migrations
 
                     b.ToTable("application_documents", null, t =>
                         {
-                            t.HasCheckConstraint("ck_application_documents_file_size", "[file_size] >= 0");
+                            t.HasCheckConstraint("ck_application_documents_file_size", "[FileSize] >= 0");
                         });
                 });
 
@@ -404,7 +404,7 @@ namespace wnc.Migrations
 
                     b.ToTable("application_preferences", null, t =>
                         {
-                            t.HasCheckConstraint("ck_application_preferences_priority_order", "[priority_order] > 0");
+                            t.HasCheckConstraint("ck_application_preferences_priority_order", "[PriorityOrder] > 0");
                         });
                 });
 
@@ -949,7 +949,7 @@ namespace wnc.Migrations
 
                     b.ToTable("majors", null, t =>
                         {
-                            t.HasCheckConstraint("ck_majors_quota", "[quota] >= 0");
+                            t.HasCheckConstraint("ck_majors_quota", "[Quota] >= 0");
                         });
                 });
 
@@ -1269,7 +1269,7 @@ namespace wnc.Migrations
 
                     b.ToTable("round_document_requirements", null, t =>
                         {
-                            t.HasCheckConstraint("ck_round_document_requirements_max_files", "[max_files] > 0");
+                            t.HasCheckConstraint("ck_round_document_requirements_max_files", "[MaxFiles] > 0");
                         });
                 });
 
@@ -1320,9 +1320,9 @@ namespace wnc.Migrations
 
                     b.ToTable("round_programs", null, t =>
                         {
-                            t.HasCheckConstraint("ck_round_programs_published_quota", "[published_quota] IS NULL OR [published_quota] >= 0");
+                            t.HasCheckConstraint("ck_round_programs_published_quota", "[PublishedQuota] IS NULL OR [PublishedQuota] >= 0");
 
-                            t.HasCheckConstraint("ck_round_programs_quota", "[quota] >= 0");
+                            t.HasCheckConstraint("ck_round_programs_quota", "[Quota] >= 0");
                         });
                 });
 
@@ -1444,7 +1444,7 @@ namespace wnc.Migrations
 
                     b.ToTable("training_programs", null, t =>
                         {
-                            t.HasCheckConstraint("ck_training_programs_quota", "[quota] > 0");
+                            t.HasCheckConstraint("ck_training_programs_quota", "[Quota] > 0");
                         });
 
                     b.HasData(
@@ -1497,7 +1497,7 @@ namespace wnc.Migrations
 
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique()
-                        .HasFilter("[revoked_at] IS NULL");
+                        .HasFilter("[RevokedAt] IS NULL");
 
                     b.HasIndex("UserId", "RoleId", "RevokedAt");
 

@@ -74,7 +74,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => new { x.UserId, x.RoleId })
                 .IsUnique()
-                .HasFilter("[revoked_at] IS NULL");
+                .HasFilter("[RevokedAt] IS NULL");
             entity.HasIndex(x => new { x.UserId, x.RoleId, x.RevokedAt });
             entity.Property(x => x.AssignedAt).HasDefaultValueSql("GETUTCDATE()");
             entity.HasOne(x => x.User)
@@ -163,7 +163,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         modelBuilder.Entity<TrainingProgram>(entity =>
         {
-            entity.ToTable("training_programs", t => t.HasCheckConstraint("ck_training_programs_quota", "[quota] > 0"));
+            entity.ToTable("training_programs", t => t.HasCheckConstraint("ck_training_programs_quota", "[Quota] > 0"));
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => x.ProgramCode).IsUnique();
             entity.Property(x => x.TuitionFee).HasPrecision(12, 2);
@@ -173,7 +173,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<Major>(entity =>
         {
-            entity.ToTable("majors", t => t.HasCheckConstraint("ck_majors_quota", "[quota] >= 0"));
+            entity.ToTable("majors", t => t.HasCheckConstraint("ck_majors_quota", "[Quota] >= 0"));
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => x.MajorCode).IsUnique();
             entity.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
@@ -186,7 +186,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<AdmissionRound>(entity =>
         {
-            entity.ToTable("admission_rounds", t => t.HasCheckConstraint("ck_admission_rounds_time", "[start_at] < [end_at]"));
+            entity.ToTable("admission_rounds", t => t.HasCheckConstraint("ck_admission_rounds_time", "[StartAt] < [EndAt]"));
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => x.RoundCode).IsUnique();
             entity.HasIndex(x => new { x.AdmissionYear, x.Status, x.StartAt, x.EndAt });
@@ -211,8 +211,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             entity.ToTable("round_programs", t =>
             {
-                t.HasCheckConstraint("ck_round_programs_quota", "[quota] >= 0");
-                t.HasCheckConstraint("ck_round_programs_published_quota", "[published_quota] IS NULL OR [published_quota] >= 0");
+                t.HasCheckConstraint("ck_round_programs_quota", "[Quota] >= 0");
+                t.HasCheckConstraint("ck_round_programs_published_quota", "[PublishedQuota] IS NULL OR [PublishedQuota] >= 0");
             });
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => new { x.RoundId, x.ProgramId, x.MajorId })
@@ -260,7 +260,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<RoundDocumentRequirement>(entity =>
         {
-            entity.ToTable("round_document_requirements", t => t.HasCheckConstraint("ck_round_document_requirements_max_files", "[max_files] > 0"));
+            entity.ToTable("round_document_requirements", t => t.HasCheckConstraint("ck_round_document_requirements_max_files", "[MaxFiles] > 0"));
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => new { x.RoundProgramId, x.DocumentTypeId }).IsUnique();
             entity.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
@@ -279,7 +279,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         modelBuilder.Entity<AdmissionApplication>(entity =>
         {
-            entity.ToTable("admission_applications", t => t.HasCheckConstraint("ck_admission_applications_submission_number", "[submission_number] >= 0"));
+            entity.ToTable("admission_applications", t => t.HasCheckConstraint("ck_admission_applications_submission_number", "[SubmissionNumber] >= 0"));
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => x.ApplicationCode).IsUnique();
             entity.HasIndex(x => new { x.CandidateId, x.RoundProgramId }).IsUnique();
@@ -298,7 +298,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<ApplicationPreference>(entity =>
         {
-            entity.ToTable("application_preferences", t => t.HasCheckConstraint("ck_application_preferences_priority_order", "[priority_order] > 0"));
+            entity.ToTable("application_preferences", t => t.HasCheckConstraint("ck_application_preferences_priority_order", "[PriorityOrder] > 0"));
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => new { x.ApplicationId, x.PriorityOrder }).IsUnique();
             entity.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
@@ -322,7 +322,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         modelBuilder.Entity<ApplicationDocument>(entity =>
         {
-            entity.ToTable("application_documents", t => t.HasCheckConstraint("ck_application_documents_file_size", "[file_size] >= 0"));
+            entity.ToTable("application_documents", t => t.HasCheckConstraint("ck_application_documents_file_size", "[FileSize] >= 0"));
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => new { x.ApplicationId, x.DocumentTypeId, x.IsLatest });
             entity.Property(x => x.UploadedAt).HasDefaultValueSql("GETUTCDATE()");
