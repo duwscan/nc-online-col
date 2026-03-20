@@ -1,0 +1,72 @@
+@model NotificationFormModel
+@{
+    var actionName = ViewContext.RouteData.Values["action"]?.ToString() ?? "Create";
+    var isEdit = string.Equals(actionName, "Edit", StringComparison.OrdinalIgnoreCase);
+    ViewData["Title"] = isEdit ? "Edit Notification" : "Create Notification";
+    var routeId = ViewContext.RouteData.Values["id"];
+}
+
+<h1 class="h3 mb-4">@ViewData["Title"]</h1>
+
+<form asp-action="@actionName" asp-route-id="@routeId" method="post" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="col-md-4">
+        <label asp-for="UserId" class="form-label"></label>
+        <select asp-for="UserId" asp-items="Model.UserOptions" class="form-select"></select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="ApplicationId" class="form-label"></label>
+        <select asp-for="ApplicationId" asp-items="Model.ApplicationOptions" class="form-select"></select>
+        <span asp-validation-for="ApplicationId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="TemplateId" class="form-label"></label>
+        <select asp-for="TemplateId" asp-items="Model.TemplateOptions" class="form-select"></select>
+        <span asp-validation-for="TemplateId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Channel" class="form-label"></label>
+        <input asp-for="Channel" class="form-control" />
+        <span asp-validation-for="Channel" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label"></label>
+        <input asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="CreatedAt" class="form-label"></label>
+        <input asp-for="CreatedAt" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+        <span asp-validation-for="CreatedAt" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="SentAt" class="form-label"></label>
+        <input asp-for="SentAt" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+        <span asp-validation-for="SentAt" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ReadAt" class="form-label"></label>
+        <input asp-for="ReadAt" class="form-control" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+        <span asp-validation-for="ReadAt" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" class="form-control" rows="8"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
