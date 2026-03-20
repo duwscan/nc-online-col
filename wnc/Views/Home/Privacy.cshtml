@@ -1,6 +1,38 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Privacy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<section class="space-y-6">
+    <div class="clay-panel max-w-4xl p-8 sm:p-10">
+        <div class="space-y-5">
+            <div class="clay-chip inline-flex w-fit px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-clay-ink/78">
+                Privacy Summary
+            </div>
+            <h1 class="text-3xl font-semibold tracking-tight text-clay-ink sm:text-4xl">What this portal records and why</h1>
+            <p class="max-w-2xl text-base leading-8 text-clay-muted">
+                This page explains data handling in plain language. It is written to inform users, not to bury important details in legalistic copy.
+            </p>
+        </div>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-3">
+        <section class="clay-panel-soft p-6">
+            <h2 class="text-lg font-semibold text-clay-ink">Authentication data</h2>
+            <p class="mt-3 text-sm leading-7 text-clay-muted">
+                The application stores account details, assigned roles, and authentication audit events needed to run student and admin login flows.
+            </p>
+        </section>
+        <section class="clay-panel-soft p-6">
+            <h2 class="text-lg font-semibold text-clay-ink">Operational logging</h2>
+            <p class="mt-3 text-sm leading-7 text-clay-muted">
+                Login attempts record the submitted identifier, result, IP address, and user agent to support security review and troubleshooting.
+            </p>
+        </section>
+        <section class="clay-panel-soft p-6">
+            <h2 class="text-lg font-semibold text-clay-ink">Credential handling</h2>
+            <p class="mt-3 text-sm leading-7 text-clay-muted">
+                Passwords are verified against bcrypt hashes. Plain-text passwords are not stored in the database.
+            </p>
+        </section>
+    </div>
+</section>

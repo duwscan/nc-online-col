@@ -1,0 +1,102 @@
+@model StudentLoginViewModel
+@{
+    ViewData["Title"] = "Student Login";
+}
+
+<section class="mx-auto max-w-4xl space-y-6">
+    <div class="clay-panel p-7 sm:p-9">
+        <div class="space-y-5">
+            <div class="clay-chip inline-flex w-fit px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-clay-ink/70">
+                Candidate Access
+            </div>
+            <div class="max-w-2xl space-y-3">
+                <h1 class="text-3xl font-semibold tracking-tight text-clay-ink sm:text-4xl">Student sign in</h1>
+                <p class="text-sm leading-8 text-clay-ink/74 sm:text-base">
+                    This page is designed for applicants. It explains the requirements up front, keeps the form short, and avoids hidden choices or confusing redirects.
+                </p>
+            </div>
+            <div class="grid gap-3 md:grid-cols-3">
+                <div class="clay-panel-soft p-4 text-sm leading-7 text-clay-ink/74">
+                    <p class="font-medium text-clay-ink">Who can continue</p>
+                    <p class="mt-1">Accounts with the <code>CANDIDATE</code> role.</p>
+                </div>
+                <div class="clay-panel-soft p-4 text-sm leading-7 text-clay-ink/74">
+                    <p class="font-medium text-clay-ink">Demo email</p>
+                    <p class="mt-1"><code>candidate@wnc.local</code></p>
+                </div>
+                <div class="clay-panel-soft p-4 text-sm leading-7 text-clay-ink/74">
+                    <p class="font-medium text-clay-ink">Demo phone</p>
+                    <p class="mt-1"><code>0900000002</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div class="clay-panel p-7 sm:p-8">
+            @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+            {
+                <div role="alert" aria-live="polite" class="clay-alert mb-5 px-5 py-4 text-sm leading-7">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <div asp-validation-summary="ModelOnly" role="alert" aria-live="polite" class="clay-alert mb-5 px-5 py-4 text-sm leading-7"></div>
+
+            <form method="post" action="/auth/student/login" class="space-y-6">
+                @Html.AntiForgeryToken()
+                <input asp-for="ReturnUrl" type="hidden"/>
+
+                <div class="space-y-2">
+                    <label asp-for="LoginIdentifier" class="block text-sm font-medium text-clay-ink"></label>
+                    <p id="student-login-identifier-help" class="pl-2 text-sm leading-6 text-clay-ink/64">
+                        Enter the email address or phone number you used for your application account.
+                    </p>
+                    <input asp-for="LoginIdentifier"
+                           autocomplete="username"
+                           aria-describedby="student-login-identifier-help"
+                           class="clay-input w-full px-4 py-3 text-base text-clay-ink placeholder:text-clay-ink/40"
+                           placeholder="name@example.com or 0900000002"/>
+                    <span asp-validation-for="LoginIdentifier" class="pl-2 text-sm text-rose-600"></span>
+                </div>
+
+                <div class="space-y-2">
+                    <label asp-for="Password" class="block text-sm font-medium text-clay-ink"></label>
+                    <p id="student-password-help" class="pl-2 text-sm leading-6 text-clay-ink/64">
+                        Your password is checked securely against a stored hash.
+                    </p>
+                    <input asp-for="Password"
+                           autocomplete="current-password"
+                           aria-describedby="student-password-help"
+                           class="clay-input w-full px-4 py-3 text-base text-clay-ink placeholder:text-clay-ink/40"
+                           placeholder="Enter your password"/>
+                    <span asp-validation-for="Password" class="pl-2 text-sm text-rose-600"></span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 pt-2">
+                    <button type="submit" class="clay-button inline-flex min-h-11 items-center justify-center px-6 py-3 text-sm font-semibold">
+                        Sign in
+                    </button>
+                    <a href="/" class="clay-secondary-button inline-flex min-h-11 items-center justify-center px-5 py-3 text-sm font-semibold">
+                        Back Home
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <aside class="clay-panel-soft p-6 sm:p-7">
+            <div class="space-y-4 text-sm leading-7 text-clay-ink/72">
+                <h3 class="text-lg font-semibold text-clay-ink">Before you sign in</h3>
+                <ul class="space-y-3">
+                    <li class="clay-chip px-4 py-3">Use the student page only for applicant accounts.</li>
+                    <li class="clay-chip px-4 py-3">If your account belongs to staff, use the admin page instead.</li>
+                    <li class="clay-chip px-4 py-3">We do not preselect options or infer consent from signing in.</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

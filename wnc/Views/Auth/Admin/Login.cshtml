@@ -1,0 +1,105 @@
+@model AdminLoginViewModel
+@{
+    ViewData["Title"] = "Admin Login";
+}
+
+<section class="mx-auto max-w-5xl">
+    <div class="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
+        <aside class="clay-panel-soft p-7 sm:p-8">
+            <div class="space-y-5">
+                <div class="clay-chip inline-flex w-fit px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-clay-ink/70">
+                    Internal Access
+                </div>
+                <div class="space-y-3">
+                    <h1 class="text-3xl font-semibold tracking-tight text-clay-ink">Admin sign in</h1>
+                    <p class="text-sm leading-8 text-clay-ink/72">
+                        This layout is intentionally more procedural than the student page. It prioritizes role clarity, operational responsibility, and direct next steps.
+                    </p>
+                </div>
+                <div class="space-y-3 text-sm leading-7 text-clay-ink/74">
+                    <div class="clay-chip px-4 py-3">
+                        Allowed roles:
+                        <span class="font-medium">ADMIN</span>,
+                        <span class="font-medium">ADMISSION_OFFICER</span>,
+                        <span class="font-medium">REPORT_VIEWER</span>
+                    </div>
+                    <div class="clay-chip px-4 py-3">Demo email: <span class="font-medium"><code>admin@wnc.local</code></span></div>
+                    <div class="clay-chip px-4 py-3">Demo phone: <span class="font-medium"><code>0900000001</code></span></div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="space-y-6">
+            <div class="clay-panel p-7 sm:p-8">
+                <div class="mb-6 space-y-2">
+                    <h3 class="text-xl font-semibold text-clay-ink">Verify your internal account</h3>
+                    <p class="text-sm leading-7 text-clay-ink/68">
+                        Sign-in succeeds only when both credentials and role authorization are valid.
+                    </p>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                {
+                    <div role="alert" aria-live="polite" class="clay-alert mb-5 px-5 py-4 text-sm leading-7">
+                        @Model.ErrorMessage
+                    </div>
+                }
+
+                <div asp-validation-summary="ModelOnly" role="alert" aria-live="polite" class="clay-alert mb-5 px-5 py-4 text-sm leading-7"></div>
+
+                <form method="post" action="/auth/admin/login" class="space-y-6">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="ReturnUrl" type="hidden"/>
+
+                    <div class="grid gap-6 md:grid-cols-2">
+                        <div class="space-y-2">
+                            <label asp-for="LoginIdentifier" class="block text-sm font-medium text-clay-ink"></label>
+                            <p id="admin-login-identifier-help" class="pl-2 text-sm leading-6 text-clay-ink/64">
+                                Enter your staff email or registered phone number.
+                            </p>
+                            <input asp-for="LoginIdentifier"
+                                   autocomplete="username"
+                                   aria-describedby="admin-login-identifier-help"
+                                   class="clay-input w-full px-4 py-3 text-base text-clay-ink placeholder:text-clay-ink/40"
+                                   placeholder="admin@wnc.local or 0900000001"/>
+                            <span asp-validation-for="LoginIdentifier" class="pl-2 text-sm text-rose-600"></span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label asp-for="Password" class="block text-sm font-medium text-clay-ink"></label>
+                            <p id="admin-password-help" class="pl-2 text-sm leading-6 text-clay-ink/64">
+                                Use your current internal password.
+                            </p>
+                            <input asp-for="Password"
+                                   autocomplete="current-password"
+                                   aria-describedby="admin-password-help"
+                                   class="clay-input w-full px-4 py-3 text-base text-clay-ink placeholder:text-clay-ink/40"
+                                   placeholder="Enter your password"/>
+                            <span asp-validation-for="Password" class="pl-2 text-sm text-rose-600"></span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 pt-2">
+                        <button type="submit" class="clay-button inline-flex min-h-11 items-center justify-center px-6 py-3 text-sm font-semibold">
+                            Sign in
+                        </button>
+                        <a href="/" class="clay-secondary-button inline-flex min-h-11 items-center justify-center px-5 py-3 text-sm font-semibold">
+                            Back Home
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="clay-panel-soft p-6">
+                <h3 class="text-lg font-semibold text-clay-ink">Access note</h3>
+                <p class="mt-3 text-sm leading-7 text-clay-ink/72">
+                    If you are a student or applicant, do not use this page. The student flow is separate to avoid role confusion and reduce accidental disclosure of staff-only expectations.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}
