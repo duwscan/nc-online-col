@@ -4,11 +4,11 @@ namespace wnc.Features.Students.Authentication.ViewModels;
 
 public class StudentLoginViewModel
 {
-    [Required(ErrorMessage = "Please enter your email address or phone number.")]
-    [Display(Name = "Email or phone number")]
+    [Required(ErrorMessage = "Vui lòng nhập địa chỉ email hoặc số điện thoại.")]
+    [Display(Name = "Email hoặc số điện thoại")]
     public string LoginIdentifier { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "Please enter your password.")]
+    [Required(ErrorMessage = "Vui lòng nhập mật khẩu.")]
     [DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;
 
