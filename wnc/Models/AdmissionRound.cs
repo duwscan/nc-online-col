@@ -16,6 +16,7 @@ public class AdmissionRound
     public Guid? CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     public AppUser? CreatedByUser { get; set; }
     public ICollection<RoundProgram> RoundPrograms { get; set; } = new List<RoundProgram>();

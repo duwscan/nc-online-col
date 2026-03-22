@@ -1,0 +1,115 @@
+@model wnc.Features.Admin.Rounds.ViewModels.CreateRoundViewModel
+@{
+    ViewData["Title"] = "Tạo đợt xét tuyển";
+}
+
+<section class="mx-auto max-w-4xl">
+    <form method="post" action="/admin/rounds/create" class="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+        @Html.AntiForgeryToken()
+
+        <div class="flex flex-col gap-2 border-b border-slate-200 pb-5">
+            <p class="text-sm font-medium text-blue-600">Quản lý tuyển sinh</p>
+            <h3 class="text-2xl font-semibold text-slate-900">Tạo đợt xét tuyển</h3>
+            <p class="text-sm text-slate-500">Thiết lập thông tin cơ bản, khoảng thời gian và trạng thái cho đợt xét tuyển mới.</p>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+
+        <div class="grid gap-5 md:grid-cols-2">
+            <div class="space-y-1">
+                <label asp-for="RoundCode" class="block text-sm font-medium text-slate-700"></label>
+                <input asp-for="RoundCode" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <span asp-validation-for="RoundCode" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="Status" class="block text-sm font-medium text-slate-700"></label>
+                <select asp-for="Status" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                    @foreach (var status in Model.AvailableStatuses)
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+                <span asp-validation-for="Status" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+                <label asp-for="RoundName" class="block text-sm font-medium text-slate-700"></label>
+                <input asp-for="RoundName" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <span asp-validation-for="RoundName" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="AdmissionYear" class="block text-sm font-medium text-slate-700"></label>
+                <input asp-for="AdmissionYear" type="number" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <span asp-validation-for="AdmissionYear" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="AllowEnrollmentConfirmation" class="block text-sm font-medium text-slate-700"></label>
+                <label class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700">
+                    <input asp-for="AllowEnrollmentConfirmation" class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                    <span>Cho phép thí sinh xác nhận nhập học trong đợt này</span>
+                </label>
+                <span asp-validation-for="AllowEnrollmentConfirmation" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="StartAt" class="block text-sm font-medium text-slate-700"></label>
+                <input asp-for="StartAt" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <span asp-validation-for="StartAt" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="EndAt" class="block text-sm font-medium text-slate-700"></label>
+                <input asp-for="EndAt" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <span asp-validation-for="EndAt" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+                <label asp-for="Notes" class="block text-sm font-medium text-slate-700"></label>
+                <textarea asp-for="Notes" rows="4" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                <span asp-validation-for="Notes" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700">Phương thức xét tuyển</label>
+                <p class="mb-2 text-xs text-slate-500">Chọn các phương thức xét tuyển áp dụng cho đợt này.</p>
+                <div class="flex flex-wrap gap-2">
+                    @foreach (var method in Model.AvailableMethods)
+                    {
+                        <label class="method-checkbox inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">
+                            <input type="checkbox" name="SelectedMethodIds" value="@method.Id" class="h-4 w-4 rounded border-slate-300 text-blue-600" />
+                            <span>@method.MethodName</span>
+                            <span class="text-xs text-slate-400">(@method.MethodCode)</span>
+                        </label>
+                    }
+                </div>
+                @if (!Model.AvailableMethods.Any())
+                {
+                    <p class="text-sm text-slate-400">Chưa có phương thức xét tuyển nào. Vui lòng tạo phương thức trước.</p>
+                }
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+            <a href="/admin/rounds" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">Hủy</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Tạo đợt xét tuyển</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.method-checkbox input').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    this.closest('.method-checkbox').classList.add('bg-blue-50', 'border-blue-200');
+                } else {
+                    this.closest('.method-checkbox').classList.remove('bg-blue-50', 'border-blue-200');
+                }
+            });
+        });
+    </script>
+}

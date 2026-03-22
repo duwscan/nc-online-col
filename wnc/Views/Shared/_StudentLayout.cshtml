@@ -1,0 +1,64 @@
+@{ var isAuthenticated = User.Identity?.IsAuthenticated ?? false; }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - Cổng Thí Sinh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 font-['Outfit',sans-serif]">
+    <header class="sticky top-0 z-50 border-b border-slate-200 bg-white shadow-sm">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                <a href="/student/profile" class="text-xl font-bold text-blue-600">Cổng thông tin thí sinh</a>
+
+                @if (isAuthenticated)
+                {
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-slate-600">@(User.Identity?.Name ?? "Thí sinh")</span>
+                        <a href="/auth/student/logout" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">Đăng xuất</a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <nav class="border-t border-slate-100 bg-slate-50">
+            <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-12 items-center gap-6">
+                    <a href="/student/profile" class="flex items-center gap-2 border-b-2 pb-1 text-sm font-medium @(Context.Request.Path.StartsWithSegments("/student/profile") ? "border-blue-600 text-blue-600" : "border-transparent text-slate-600 hover:text-blue-600")">
+                        Hồ sơ
+                    </a>
+                    <a href="/student/rounds" class="flex items-center gap-2 border-b-2 pb-1 text-sm font-medium @(Context.Request.Path.StartsWithSegments("/student/rounds") ? "border-blue-600 text-blue-600" : "border-transparent text-slate-600 hover:text-blue-600")">
+                        Đợt xét tuyển
+                    </a>
+                    <a href="/student/applications" class="flex items-center gap-2 border-b-2 pb-1 text-sm font-medium @(Context.Request.Path.StartsWithSegments("/student/applications") ? "border-blue-600 text-blue-600" : "border-transparent text-slate-600 hover:text-blue-600")">
+                        Đơn đăng ký
+                    </a>
+                    <a href="/student/notifications" class="flex items-center gap-2 border-b-2 pb-1 text-sm font-medium @(Context.Request.Path.StartsWithSegments("/student/notifications") ? "border-blue-600 text-blue-600" : "border-transparent text-slate-600 hover:text-blue-600")">
+                        Thông báo
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="mx-auto min-h-[calc(100vh-12rem)] max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+        @RenderBody()
+    </main>
+
+    <footer class="mt-auto border-t border-slate-200 bg-white py-6">
+        <div class="mx-auto max-w-6xl px-4 text-center text-sm text-slate-500 sm:px-6 lg:px-8">
+            &copy; 2026 - Hệ thống Tuyển sinh WNC
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

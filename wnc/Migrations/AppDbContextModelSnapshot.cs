@@ -184,6 +184,9 @@ namespace wnc.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("EndAt")
                         .HasColumnType("datetime2");
 
@@ -225,6 +228,64 @@ namespace wnc.Migrations
                     b.ToTable("admission_rounds", null, t =>
                         {
                             t.HasCheckConstraint("ck_admission_rounds_time", "[StartAt] < [EndAt]");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("bbbbbbb1-1111-1111-1111-111111111111"),
+                            AdmissionYear = 2025,
+                            AllowEnrollmentConfirmation = false,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EndAt = new DateTime(2025, 6, 30, 23, 59, 59, 0, DateTimeKind.Utc),
+                            Notes = "Dot xet tuyen chinh quy nam 2025",
+                            RoundCode = "DOT1-2025",
+                            RoundName = "Dot 1 nam 2025",
+                            StartAt = new DateTime(2025, 3, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Status = "PUBLISHED",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaa1-1111-1111-1111-111111111111"),
+                            AdmissionYear = 2026,
+                            AllowEnrollmentConfirmation = true,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EndAt = new DateTime(2026, 6, 30, 23, 59, 59, 0, DateTimeKind.Utc),
+                            Notes = "Dot xet tuyen chinh quy nam 2026",
+                            RoundCode = "DOT1-2026",
+                            RoundName = "Dot 1 nam 2026",
+                            StartAt = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Status = "PUBLISHED",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbb2-1111-1111-1111-111111111111"),
+                            AdmissionYear = 2026,
+                            AllowEnrollmentConfirmation = false,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EndAt = new DateTime(2026, 9, 30, 23, 59, 59, 0, DateTimeKind.Utc),
+                            Notes = "Dot xet tuyen chinh quy dot 2 nam 2026",
+                            RoundCode = "DOT2-2026",
+                            RoundName = "Dot 2 nam 2026",
+                            StartAt = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Status = "PUBLISHED",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbb3-1111-1111-1111-111111111111"),
+                            AdmissionYear = 2027,
+                            AllowEnrollmentConfirmation = false,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            EndAt = new DateTime(2027, 6, 30, 23, 59, 59, 0, DateTimeKind.Utc),
+                            Notes = "Dot xet tuyen chinh quy nam 2027",
+                            RoundCode = "DOT3-2027",
+                            RoundName = "Dot 3 nam 2027",
+                            StartAt = new DateTime(2027, 3, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Status = "PUBLISHED",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -948,6 +1009,47 @@ namespace wnc.Migrations
                         {
                             t.HasCheckConstraint("ck_majors_quota", "[Quota] >= 0");
                         });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaa2-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Cong nghe thong tin",
+                            DisplayOrder = 1,
+                            MajorCode = "CNTT",
+                            MajorName = "Cong nghe thong tin",
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            Quota = 150,
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaa3-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Ke toan doanh nghiep",
+                            DisplayOrder = 2,
+                            MajorCode = "KT",
+                            MajorName = "Ke toan",
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            Quota = 100,
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaa4-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Marketing so",
+                            DisplayOrder = 3,
+                            MajorCode = "MK",
+                            MajorName = "Marketing",
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            Quota = 80,
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("wnc.Models.Notification", b =>
@@ -1223,6 +1325,44 @@ namespace wnc.Migrations
                     b.HasIndex("RoundProgramId");
 
                     b.ToTable("round_admission_methods", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaa01-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MethodId = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
+                            MinimumScore = 7.0m,
+                            RoundProgramId = new Guid("aaaaaaa5-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE"
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaa02-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MethodId = new Guid("bbbbbbbb-2222-2222-2222-222222222222"),
+                            MinimumScore = 18.0m,
+                            RoundProgramId = new Guid("aaaaaaa5-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE"
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaa03-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MethodId = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
+                            MinimumScore = 6.5m,
+                            RoundProgramId = new Guid("aaaaaaa6-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE"
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaa04-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MethodId = new Guid("aaaaaaaa-1111-1111-1111-111111111111"),
+                            MinimumScore = 6.0m,
+                            RoundProgramId = new Guid("aaaaaaa7-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE"
+                        });
                 });
 
             modelBuilder.Entity("wnc.Models.RoundDocumentRequirement", b =>
@@ -1320,6 +1460,92 @@ namespace wnc.Migrations
                             t.HasCheckConstraint("ck_round_programs_published_quota", "[PublishedQuota] IS NULL OR [PublishedQuota] >= 0");
 
                             t.HasCheckConstraint("ck_round_programs_quota", "[Quota] >= 0");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaa5-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MajorId = new Guid("aaaaaaa2-1111-1111-1111-111111111111"),
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            PublishedQuota = 120,
+                            Quota = 150,
+                            RoundId = new Guid("aaaaaaa1-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaa6-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MajorId = new Guid("aaaaaaa3-1111-1111-1111-111111111111"),
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            PublishedQuota = 80,
+                            Quota = 100,
+                            RoundId = new Guid("aaaaaaa1-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("aaaaaaa7-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MajorId = new Guid("aaaaaaa4-1111-1111-1111-111111111111"),
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            PublishedQuota = 60,
+                            Quota = 80,
+                            RoundId = new Guid("aaaaaaa1-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbb01-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MajorId = new Guid("aaaaaaa2-1111-1111-1111-111111111111"),
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            PublishedQuota = 90,
+                            Quota = 100,
+                            RoundId = new Guid("bbbbbbb1-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbb02-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MajorId = new Guid("aaaaaaa3-1111-1111-1111-111111111111"),
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            PublishedQuota = 70,
+                            Quota = 80,
+                            RoundId = new Guid("bbbbbbb1-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbb03-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MajorId = new Guid("aaaaaaa2-1111-1111-1111-111111111111"),
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            PublishedQuota = 80,
+                            Quota = 100,
+                            RoundId = new Guid("bbbbbbb2-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbb04-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            MajorId = new Guid("aaaaaaa2-1111-1111-1111-111111111111"),
+                            ProgramId = new Guid("99999999-7777-7777-7777-777777777777"),
+                            PublishedQuota = 100,
+                            Quota = 120,
+                            RoundId = new Guid("bbbbbbb3-1111-1111-1111-111111111111"),
+                            Status = "ACTIVE",
+                            UpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1441,7 +1667,7 @@ namespace wnc.Migrations
 
                     b.ToTable("training_programs", null, t =>
                         {
-                            t.HasCheckConstraint("ck_training_programs_quota", "[Quota] > 0");
+                            t.HasCheckConstraint("ck_training_programs_quota", "[Quota] >= 0");
                         });
 
                     b.HasData(

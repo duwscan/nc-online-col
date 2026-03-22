@@ -1,0 +1,142 @@
+@model wnc.Features.Admin.MajorManagement.ViewModels.MajorListViewModel
+@{
+    ViewData["Title"] = "Ngành đào tạo";
+}
+
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+        @successMessage
+    </div>
+}
+
+<section class="space-y-6">
+    <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <p class="text-sm font-medium text-blue-600">Quản lý tuyển sinh</p>
+                <h3 class="mt-1 text-2xl font-semibold text-slate-900">Ngành đào tạo</h3>
+                <p class="mt-2 text-sm text-slate-500">Quản lý danh sách ngành theo từng chương trình đào tạo và điều chỉnh trạng thái sử dụng.</p>
+            </div>
+            <a href="/admin/majors/create" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                Tạo ngành
+            </a>
+        </div>
+
+        <form method="get" action="/admin/majors" class="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(220px,1fr)_minmax(180px,1fr)_auto]">
+            <div class="space-y-1">
+                <label for="searchTerm" class="block text-sm font-medium text-slate-700">Tìm kiếm</label>
+                <input id="searchTerm" name="searchTerm" value="@Model.SearchTerm" placeholder="Mã hoặc tên ngành" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+            </div>
+
+            <div class="space-y-1">
+                <label for="programId" class="block text-sm font-medium text-slate-700">Chương trình đào tạo</label>
+                <select id="programId" name="programId" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                    <option value="">Tất cả chương trình</option>
+                    @foreach (var program in Model.AvailablePrograms)
+                    {
+                        if (Model.ProgramId.HasValue && Model.ProgramId.Value == program.Id)
+                        {
+                            <option value="@program.Id" selected>@program.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@program.Id">@program.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="space-y-1">
+                <label for="status" class="block text-sm font-medium text-slate-700">Trạng thái</label>
+                <select id="status" name="status" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                    <option value="">Tất cả trạng thái</option>
+                    @foreach (var status in Model.AvailableStatuses)
+                    {
+                        if (string.Equals(Model.Status, status, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@status" selected>@status</option>
+                        }
+                        else
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="flex items-end gap-2 lg:justify-end">
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700">Áp dụng</button>
+                <a href="/admin/majors" class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">Đặt lại</a>
+            </div>
+        </form>
+    </article>
+
+    <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
+        <div class="flex flex-col gap-3 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900">Danh sách ngành</h3>
+                <p class="mt-1 text-sm text-slate-500">Hiển thị @Model.StartItem-@Model.EndItem của @Model.TotalItems ngành đào tạo.</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 font-medium">Mã ngành</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Tên ngành</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Chương trình đào tạo</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Chỉ tiêu</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Trạng thái</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
+                    @if (Model.Majors.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-sm text-slate-500">Không tìm thấy ngành đào tạo phù hợp.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var major in Model.Majors)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 font-medium text-slate-900">@major.MajorCode</td>
+                                <td class="px-6 py-4">@major.MajorName</td>
+                                <td class="px-6 py-4">@major.ProgramName</td>
+                                <td class="px-6 py-4">@major.Quota</td>
+                                <td class="px-6 py-4">
+                                    @if (string.Equals(major.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">Đang hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">Ngừng hoạt động</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4">
+                                    <a href="/admin/majors/edit/@major.Id" class="inline-flex items-center rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">Sửa</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="flex flex-col gap-3 border-t border-slate-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm text-slate-500">Trang @Model.Page của @Model.TotalPages</p>
+                <div class="flex gap-2">
+                    <a href="/admin/majors?searchTerm=@Model.SearchTerm&programId=@Model.ProgramId&status=@Model.Status&page=@Math.Max(1, Model.Page - 1)" class="@(Model.Page <= 1 ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Trước</a>
+                    <a href="/admin/majors?searchTerm=@Model.SearchTerm&programId=@Model.ProgramId&status=@Model.Status&page=@Math.Min(Model.TotalPages, Model.Page + 1)" class="@(Model.Page >= Model.TotalPages ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Sau</a>
+                </div>
+            </div>
+        }
+    </article>
+</section>

@@ -1,11 +1,22 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using wnc.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var supportedCultures = new[]
+{
+    new CultureInfo("en-US"),
+    new CultureInfo("vi-VN")
+};
+
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddLocalization();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services
@@ -46,6 +57,13 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+var requestLocalizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+};
+
 await DbInitializer.InitializeAsync(app.Services);
 
 // Configure the HTTP request pipeline.
@@ -57,6 +75,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRequestLocalization(requestLocalizationOptions);
 app.UseRouting();
 
 app.UseAuthentication();

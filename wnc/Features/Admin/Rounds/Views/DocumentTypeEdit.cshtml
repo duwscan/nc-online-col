@@ -1,0 +1,69 @@
+@model DocumentType
+@{
+    ViewData["Title"] = "Sửa loại giấy tờ";
+}
+
+<div class="mx-auto max-w-2xl space-y-6">
+    <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+        <h1 class="text-xl font-semibold text-slate-900">Sửa loại giấy tờ</h1>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="mt-4 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+
+        <form method="post" action="/admin/document-types/edit/@Model.Id" class="mt-6 space-y-4">
+            @Html.AntiForgeryToken()
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Mã giấy tờ</label>
+                <input value="@Model.DocumentCode" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-500" readonly />
+                <p class="mt-1 text-xs text-slate-400">Mã giấy tờ không thể thay đổi.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Tên giấy tờ</label>
+                <input name="DocumentName" id="DocumentName" value="@Model.DocumentName" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="VD: Căn cước công dân" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Mô tả</label>
+                <textarea name="Description" rows="3" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3">@Model.Description</textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Trạng thái</label>
+                <select name="Status" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3">
+                    <option value="ACTIVE" selected="@(Model.Status == "ACTIVE")">ACTIVE</option>
+                    <option value="INACTIVE" selected="@(Model.Status == "INACTIVE")">INACTIVE</option>
+                </select>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <button type="submit" class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">Lưu</button>
+                <a href="/admin/document-types" class="rounded-xl border border-slate-300 px-6 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function generateSlug(name) {
+            return name.toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9\-]/g, '')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
+        document.getElementById('DocumentName').addEventListener('input', function(e) {
+            document.querySelector('input[name="DocumentCode"]').value = generateSlug(e.target.value);
+        });
+    </script>
+}

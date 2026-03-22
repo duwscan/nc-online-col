@@ -1,81 +1,293 @@
-﻿@{
-    ViewData["Title"] = "Admissions Access";
+@{
+    ViewData["Title"] = "Trang chủ - Tuyển sinh trực tuyến";
 }
 
-<section class="space-y-8">
-    <div class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <div class="clay-panel p-8 sm:p-10">
-            <div class="max-w-2xl space-y-6">
-                <div class="clay-chip inline-flex w-fit px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-clay-ink/78">
-                    Access Overview
-                </div>
-                <div class="space-y-4">
-                    <h1 class="text-3xl font-semibold tracking-tight text-clay-ink sm:text-5xl">
-                        Clear entry points for applicants and internal staff.
-                    </h1>
-                    <p class="max-w-xl text-base leading-8 text-clay-muted">
-                        This redesign prioritizes readable contrast, explicit role expectations, visible feedback, and navigation that does not pressure people into the wrong path.
-                    </p>
-                </div>
-                <div class="flex flex-wrap gap-3">
-                    <a href="/auth/student/login" class="clay-button inline-flex min-h-11 items-center justify-center px-6 py-3 text-sm font-semibold">
-                        Go to Student Login
+<div class="space-y-16 py-8">
+
+    <!-- Hero Section -->
+    <section class="text-center">
+        <h1 class="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+            Trường Cao đẳng <span class="text-blue-600">Công nghệ</span>
+        </h1>
+        
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
+            Hệ thống Quản lý Tuyển sinh Trực tuyến — Đăng ký xét tuyển, nộp hồ sơ và tra cứu kết quả dễ dàng, mọi lúc mọi nơi.
+        </p>
+        
+        <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                var isAdmin = User.IsInRole("ADMIN") || User.IsInRole("ADMISSION_OFFICER") || User.IsInRole("REPORT_VIEWER");
+                if (isAdmin)
+                {
+                    <a href="/admin/dashboard" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-blue-600 px-8 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        Quản trị
                     </a>
-                    <a href="/auth/admin/login" class="clay-secondary-button inline-flex min-h-11 items-center justify-center px-6 py-3 text-sm font-semibold">
-                        Go to Admin Login
+                }
+                else
+                {
+                    <a href="/student/profile" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-blue-600 px-8 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        Thí sinh
                     </a>
+                }
+            }
+            else
+            {
+                <a href="/auth/student/login" class="inline-flex min-h-12 items-center justify-center rounded-lg bg-blue-600 px-8 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Đăng nhập
+                </a>
+                <a href="/auth/student/register" class="inline-flex min-h-12 items-center justify-center rounded-lg border border-slate-300 bg-white px-8 py-3 text-base font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Đăng ký
+                </a>
+            }
+        </div>
+    </section>
+
+    <!-- Admission Process Section -->
+    <section>
+        <div class="text-center">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Quy trình tuyển sinh</h2>
+            <p class="mt-3 text-slate-600">Năm bước đơn giản để hoàn thành hồ sơ xét tuyển</p>
+        </div>
+        
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            <!-- Step 1 -->
+            <div class="relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="absolute -top-3 -left-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">1</div>
+                <div class="mt-4">
+                    <h3 class="font-semibold text-slate-900">Đăng ký tài khoản</h3>
+                    <p class="mt-2 text-sm text-slate-600">Tạo tài khoản với email hoặc số điện thoại</p>
+                </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="absolute -top-3 -left-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">2</div>
+                <div class="mt-4">
+                    <h3 class="font-semibold text-slate-900">Điền thông tin</h3>
+                    <p class="mt-2 text-sm text-slate-600">Khai báo thông tin cá nhân và nguyện vọng</p>
+                </div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="absolute -top-3 -left-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">3</div>
+                <div class="mt-4">
+                    <h3 class="font-semibold text-slate-900">Tải lên tài liệu</h3>
+                    <p class="mt-2 text-sm text-slate-600">Hồ sơ, giấy tờ cần thiết theo yêu cầu</p>
+                </div>
+            </div>
+            
+            <!-- Step 4 -->
+            <div class="relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="absolute -top-3 -left-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">4</div>
+                <div class="mt-4">
+                    <h3 class="font-semibold text-slate-900">Nộp hồ sơ</h3>
+                    <p class="mt-2 text-sm text-slate-600">Xác nhận và gửi hồ sơ về trường</p>
+                </div>
+            </div>
+            
+            <!-- Step 5 -->
+            <div class="relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="absolute -top-3 -left-3 flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">5</div>
+                <div class="mt-4">
+                    <h3 class="font-semibold text-slate-900">Tra cứu kết quả</h3>
+                    <p class="mt-2 text-sm text-slate-600">Theo dõi trạng thái và nhận kết quả</p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <aside class="clay-panel-soft p-6 sm:p-7">
-            <h2 class="text-lg font-semibold text-clay-ink">Design commitments</h2>
-            <ul class="mt-4 space-y-3 text-sm leading-7 text-clay-muted">
-                <li class="clay-chip px-4 py-3">Labels remain visible and are never replaced by placeholder-only fields.</li>
-                <li class="clay-chip px-4 py-3">Error messages appear near the relevant form and use alert regions for assistive tech.</li>
-                <li class="clay-chip px-4 py-3">The system explains what each login route is for before asking for credentials.</li>
+    <!-- Programs Section -->
+    <section>
+        <div class="text-center">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Chương trình đào tạo</h2>
+            <p class="mt-3 text-slate-600">Đa dạng hình thức đào tạo phù hợp với mọi đối tượng</p>
+        </div>
+        
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Cao đẳng -->
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <h3 class="mt-4 font-semibold text-slate-900">Cao đẳng</h3>
+                <p class="mt-2 text-sm text-slate-600">Đào tạo chính quy 2-3 năm, tốt nghiệp được cấp bằng Cao đẳng chính quy.</p>
+            </div>
+            
+            <!-- Liên thông -->
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 text-green-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </div>
+                <h3 class="mt-4 font-semibold text-slate-900">Liên thông</h3>
+                <p class="mt-2 text-sm text-slate-600">Dành cho sinh viên đã có bằng Trung cấp, rút ngắn thời gian học.</p>
+            </div>
+            
+            <!-- Văn bằng 2 -->
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <h3 class="mt-4 font-semibold text-slate-900">Văn bằng 2</h3>
+                <p class="mt-2 text-sm text-slate-600">Chương trình thứ hai dành cho người đã có bằng Đại học hoặc Cao đẳng.</p>
+            </div>
+            
+            <!-- Từ xa -->
+            <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 text-orange-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h3 class="mt-4 font-semibold text-slate-900">Từ xa</h3>
+                <p class="mt-2 text-sm text-slate-600">Học trực tuyến linh hoạt, phù hợp với người đi làm hoặc ở xa.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section class="rounded-2xl bg-slate-50 p-8 sm:p-10">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Tại sao chọn tuyển sinh trực tuyến?</h2>
+        </div>
+        
+        <div class="mt-10 grid gap-6 sm:grid-cols-2">
+            <!-- Benefit 1 -->
+            <div class="flex gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900">Đăng ký 24/7</h3>
+                    <p class="mt-1 text-sm text-slate-600">Nộp hồ sơ mọi lúc, mọi nơi không cần đến trường trong giờ hành chính.</p>
+                </div>
+            </div>
+            
+            <!-- Benefit 2 -->
+            <div class="flex gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-600 text-white">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900">Theo dõi trực tiếp</h3>
+                    <p class="mt-1 text-sm text-slate-600">Cập nhật trạng thái hồ sơ và nhận thông báo kết quả nhanh chóng.</p>
+                </div>
+            </div>
+            
+            <!-- Benefit 3 -->
+            <div class="flex gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-600 text-white">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900">Bảo mật an toàn</h3>
+                    <p class="mt-1 text-sm text-slate-600">Tài liệu được mã hóa và lưu trữ an toàn, chỉ người được ủy quyền mới truy cập được.</p>
+                </div>
+            </div>
+            
+            <!-- Benefit 4 -->
+            <div class="flex gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-white">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900">Thông báo tức thì</h3>
+                    <p class="mt-1 text-sm text-slate-600">Nhận kết quả xét tuyển qua hệ thống ngay khi có thông tin.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Footer -->
+<footer class="mt-16 border-t border-slate-200 pt-8">
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Contact -->
+        <div>
+            <h4 class="font-semibold text-slate-900">Liên hệ</h4>
+            <ul class="mt-4 space-y-3 text-sm text-slate-600">
+                <li class="flex items-start gap-2">
+                    <svg class="mt-0.5 h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh</span>
+                </li>
+                <li class="flex items-center gap-2">
+                    <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                    <span>Hotline: 1900 1234</span>
+                </li>
+                <li class="flex items-center gap-2">
+                    <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span>tuyensinh@caodang.edu.vn</span>
+                </li>
             </ul>
-        </aside>
+        </div>
+        
+        <!-- Quick Links -->
+        <div>
+            <h4 class="font-semibold text-slate-900">Truy cập nhanh</h4>
+            <ul class="mt-4 space-y-3 text-sm">
+                <li><a href="/auth/student/login" class="text-slate-600 hover:text-blue-600">Đăng nhập</a></li>
+                <li><a href="/auth/student/register" class="text-slate-600 hover:text-blue-600">Đăng ký</a></li>
+                <li><a href="#" class="text-slate-600 hover:text-blue-600">Hướng dẫn đăng ký</a></li>
+                <li><a href="#" class="text-slate-600 hover:text-blue-600">Tra cứu kết quả</a></li>
+            </ul>
+        </div>
+        
+        <!-- Programs -->
+        <div>
+            <h4 class="font-semibold text-slate-900">Chương trình đào tạo</h4>
+            <ul class="mt-4 space-y-3 text-sm">
+                <li><a href="#" class="text-slate-600 hover:text-blue-600">Cao đẳng chính quy</a></li>
+                <li><a href="#" class="text-slate-600 hover:text-blue-600">Liên thông</a></li>
+                <li><a href="#" class="text-slate-600 hover:text-blue-600">Văn bằng 2</a></li>
+                <li><a href="#" class="text-slate-600 hover:text-blue-600">Đào tạo từ xa</a></li>
+            </ul>
+        </div>
+        
+        <!-- Working Hours -->
+        <div>
+            <h4 class="font-semibold text-slate-900">Giờ làm việc</h4>
+            <ul class="mt-4 space-y-2 text-sm text-slate-600">
+                <li>Thứ 2 - Thứ 6: 7:30 - 17:00</li>
+                <li>Thứ 7: 7:30 - 11:30</li>
+                <li>Chủ nhật: Nghỉ</li>
+            </ul>
+        </div>
     </div>
-
-    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <article class="clay-panel-soft p-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-clay-muted">Student route</p>
-            <h2 class="mt-3 text-xl font-semibold text-clay-ink">Supportive layout</h2>
-            <p class="mt-3 text-sm leading-7 text-clay-muted">
-                Applicants see a guided, low-friction flow with plain-language explanations and pre-sign-in guidance.
-            </p>
-        </article>
-        <article class="clay-panel-soft p-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-clay-muted">Admin route</p>
-            <h2 class="mt-3 text-xl font-semibold text-clay-ink">Procedural layout</h2>
-            <p class="mt-3 text-sm leading-7 text-clay-muted">
-                Staff users see policy context, role eligibility, and a more operational form structure.
-            </p>
-        </article>
-        <article class="clay-panel-soft p-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-clay-muted">Audit logging</p>
-            <h2 class="mt-3 text-xl font-semibold text-clay-ink">Visible accountability</h2>
-            <p class="mt-3 text-sm leading-7 text-clay-muted">
-                Login attempts are recorded with identifier, result, IP address, and user agent.
-            </p>
-        </article>
-        <article class="clay-panel-soft p-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-clay-muted">Session state</p>
-            <h2 class="mt-3 text-xl font-semibold text-clay-ink">No hidden status</h2>
-            <p class="mt-3 text-sm leading-7 text-clay-muted">
-                The shared shell exposes the current authenticated identity and role chips whenever a session exists.
-            </p>
-        </article>
+    
+    <div class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 text-center sm:flex-row">
+        <p class="text-sm text-slate-500">© 2026 Trường Cao đẳng Công nghệ. Tất cả quyền được bảo lưu.</p>
+        <div class="flex gap-6 text-sm text-slate-500">
+            <a href="#" class="hover:text-blue-600">Chính sách bảo mật</a>
+            <a href="#" class="hover:text-blue-600">Điều khoản sử dụng</a>
+        </div>
     </div>
-
-    @if (User.Identity?.IsAuthenticated == true)
-    {
-        <section class="clay-panel p-7 sm:p-8">
-            <h2 class="text-2xl font-semibold text-clay-ink">Current session</h2>
-            <p class="mt-3 text-sm leading-7 text-clay-muted">
-                Signed in as <span class="font-medium text-clay-ink">@(User.Identity?.Name ?? "Unknown user")</span>.
-            </p>
-        </section>
-    }
-</section>
+</footer>

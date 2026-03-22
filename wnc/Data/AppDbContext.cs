@@ -163,7 +163,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         modelBuilder.Entity<TrainingProgram>(entity =>
         {
-            entity.ToTable("training_programs", t => t.HasCheckConstraint("ck_training_programs_quota", "[Quota] > 0"));
+            entity.ToTable("training_programs", t => t.HasCheckConstraint("ck_training_programs_quota", "[Quota] >= 0"));
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => x.ProgramCode).IsUnique();
             entity.Property(x => x.TuitionFee).HasPrecision(12, 2);
@@ -581,6 +581,225 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 UpdatedAt = seededAt
             });
 
+        modelBuilder.Entity<Major>().HasData(
+            new Major
+            {
+                Id = SeedIds.MajorCnttId,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorCode = "CNTT",
+                MajorName = "Cong nghe thong tin",
+                Description = "Cong nghe thong tin",
+                Quota = 150,
+                DisplayOrder = 1,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new Major
+            {
+                Id = SeedIds.MajorKeToanId,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorCode = "KT",
+                MajorName = "Ke toan",
+                Description = "Ke toan doanh nghiep",
+                Quota = 100,
+                DisplayOrder = 2,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new Major
+            {
+                Id = SeedIds.MajorMarketingId,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorCode = "MK",
+                MajorName = "Marketing",
+                Description = "Marketing so",
+                Quota = 80,
+                DisplayOrder = 3,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            });
+
+        modelBuilder.Entity<AdmissionRound>().HasData(
+            new AdmissionRound
+            {
+                Id = SeedIds.Round2025Id,
+                RoundCode = "DOT1-2025",
+                RoundName = "Dot 1 nam 2025",
+                AdmissionYear = 2025,
+                StartAt = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+                EndAt = new DateTime(2025, 6, 30, 23, 59, 59, DateTimeKind.Utc),
+                Status = "PUBLISHED",
+                Notes = "Dot xet tuyen chinh quy nam 2025",
+                AllowEnrollmentConfirmation = false,
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new AdmissionRound
+            {
+                Id = SeedIds.Round2026Id,
+                RoundCode = "DOT1-2026",
+                RoundName = "Dot 1 nam 2026",
+                AdmissionYear = 2026,
+                StartAt = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+                EndAt = new DateTime(2026, 6, 30, 23, 59, 59, DateTimeKind.Utc),
+                Status = "PUBLISHED",
+                Notes = "Dot xet tuyen chinh quy nam 2026",
+                AllowEnrollmentConfirmation = true,
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new AdmissionRound
+            {
+                Id = SeedIds.Round2026Dot2Id,
+                RoundCode = "DOT2-2026",
+                RoundName = "Dot 2 nam 2026",
+                AdmissionYear = 2026,
+                StartAt = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+                EndAt = new DateTime(2026, 9, 30, 23, 59, 59, DateTimeKind.Utc),
+                Status = "PUBLISHED",
+                Notes = "Dot xet tuyen chinh quy dot 2 nam 2026",
+                AllowEnrollmentConfirmation = false,
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new AdmissionRound
+            {
+                Id = SeedIds.Round2026Dot3Id,
+                RoundCode = "DOT3-2027",
+                RoundName = "Dot 3 nam 2027",
+                AdmissionYear = 2027,
+                StartAt = new DateTime(2027, 3, 1, 0, 0, 0, DateTimeKind.Utc),
+                EndAt = new DateTime(2027, 6, 30, 23, 59, 59, DateTimeKind.Utc),
+                Status = "PUBLISHED",
+                Notes = "Dot xet tuyen chinh quy nam 2027",
+                AllowEnrollmentConfirmation = false,
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            });
+
+        modelBuilder.Entity<RoundProgram>().HasData(
+            new RoundProgram
+            {
+                Id = SeedIds.RoundProgramCnttId,
+                RoundId = SeedIds.Round2026Id,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorId = SeedIds.MajorCnttId,
+                Quota = 150,
+                PublishedQuota = 120,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new RoundProgram
+            {
+                Id = SeedIds.RoundProgramKeToanId,
+                RoundId = SeedIds.Round2026Id,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorId = SeedIds.MajorKeToanId,
+                Quota = 100,
+                PublishedQuota = 80,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new RoundProgram
+            {
+                Id = SeedIds.RoundProgramMarketingId,
+                RoundId = SeedIds.Round2026Id,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorId = SeedIds.MajorMarketingId,
+                Quota = 80,
+                PublishedQuota = 60,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new RoundProgram
+            {
+                Id = SeedIds.RoundProgram2025CnttId,
+                RoundId = SeedIds.Round2025Id,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorId = SeedIds.MajorCnttId,
+                Quota = 100,
+                PublishedQuota = 90,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new RoundProgram
+            {
+                Id = SeedIds.RoundProgram2025KtId,
+                RoundId = SeedIds.Round2025Id,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorId = SeedIds.MajorKeToanId,
+                Quota = 80,
+                PublishedQuota = 70,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new RoundProgram
+            {
+                Id = SeedIds.RoundProgram2026Dot2CnttId,
+                RoundId = SeedIds.Round2026Dot2Id,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorId = SeedIds.MajorCnttId,
+                Quota = 100,
+                PublishedQuota = 80,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            },
+            new RoundProgram
+            {
+                Id = SeedIds.RoundProgram2026Dot3CnttId,
+                RoundId = SeedIds.Round2026Dot3Id,
+                ProgramId = SeedIds.DefaultProgramId,
+                MajorId = SeedIds.MajorCnttId,
+                Quota = 120,
+                PublishedQuota = 100,
+                Status = "ACTIVE",
+                CreatedAt = seededAt,
+                UpdatedAt = seededAt
+            });
+
+        modelBuilder.Entity<RoundAdmissionMethod>().HasData(
+            new RoundAdmissionMethod
+            {
+                Id = SeedIds.RoundMethodCnttHocBaId,
+                RoundProgramId = SeedIds.RoundProgramCnttId,
+                MethodId = SeedIds.TranscriptMethodId,
+                MinimumScore = 7.0m,
+                CreatedAt = seededAt
+            },
+            new RoundAdmissionMethod
+            {
+                Id = SeedIds.RoundMethodCnttDiemThiId,
+                RoundProgramId = SeedIds.RoundProgramCnttId,
+                MethodId = SeedIds.ExamMethodId,
+                MinimumScore = 18.0m,
+                CreatedAt = seededAt
+            },
+            new RoundAdmissionMethod
+            {
+                Id = SeedIds.RoundMethodKeToanHocBaId,
+                RoundProgramId = SeedIds.RoundProgramKeToanId,
+                MethodId = SeedIds.TranscriptMethodId,
+                MinimumScore = 6.5m,
+                CreatedAt = seededAt
+            },
+            new RoundAdmissionMethod
+            {
+                Id = SeedIds.RoundMethodMarketingHocBaId,
+                RoundProgramId = SeedIds.RoundProgramMarketingId,
+                MethodId = SeedIds.TranscriptMethodId,
+                MinimumScore = 6.0m,
+                CreatedAt = seededAt
+            });
+
         modelBuilder.Entity<SystemConfig>().HasData(
             new SystemConfig
             {
@@ -622,4 +841,25 @@ public static class SeedIds
 
     public static readonly Guid LoginByEmailConfigId = Guid.Parse("88888888-8888-8888-8888-888888888881");
     public static readonly Guid LoginByPhoneConfigId = Guid.Parse("88888888-8888-8888-8888-888888888882");
+
+    public static readonly Guid Round2026Id = Guid.Parse("aaaaaaa1-1111-1111-1111-111111111111");
+    public static readonly Guid MajorCnttId = Guid.Parse("aaaaaaa2-1111-1111-1111-111111111111");
+    public static readonly Guid MajorKeToanId = Guid.Parse("aaaaaaa3-1111-1111-1111-111111111111");
+    public static readonly Guid MajorMarketingId = Guid.Parse("aaaaaaa4-1111-1111-1111-111111111111");
+    public static readonly Guid RoundProgramCnttId = Guid.Parse("aaaaaaa5-1111-1111-1111-111111111111");
+    public static readonly Guid RoundProgramKeToanId = Guid.Parse("aaaaaaa6-1111-1111-1111-111111111111");
+    public static readonly Guid RoundProgramMarketingId = Guid.Parse("aaaaaaa7-1111-1111-1111-111111111111");
+    public static readonly Guid RoundMethodCnttHocBaId = Guid.Parse("aaaaaa01-1111-1111-1111-111111111111");
+    public static readonly Guid RoundMethodCnttDiemThiId = Guid.Parse("aaaaaa02-1111-1111-1111-111111111111");
+    public static readonly Guid RoundMethodKeToanHocBaId = Guid.Parse("aaaaaa03-1111-1111-1111-111111111111");
+    public static readonly Guid RoundMethodMarketingHocBaId = Guid.Parse("aaaaaa04-1111-1111-1111-111111111111");
+
+    // Additional rounds
+    public static readonly Guid Round2025Id = Guid.Parse("bbbbbbb1-1111-1111-1111-111111111111");
+    public static readonly Guid Round2026Dot2Id = Guid.Parse("bbbbbbb2-1111-1111-1111-111111111111");
+    public static readonly Guid Round2026Dot3Id = Guid.Parse("bbbbbbb3-1111-1111-1111-111111111111");
+    public static readonly Guid RoundProgram2025CnttId = Guid.Parse("bbbbbb01-1111-1111-1111-111111111111");
+    public static readonly Guid RoundProgram2025KtId = Guid.Parse("bbbbbb02-1111-1111-1111-111111111111");
+    public static readonly Guid RoundProgram2026Dot2CnttId = Guid.Parse("bbbbbb03-1111-1111-1111-111111111111");
+    public static readonly Guid RoundProgram2026Dot3CnttId = Guid.Parse("bbbbbb04-1111-1111-1111-111111111111");
 }

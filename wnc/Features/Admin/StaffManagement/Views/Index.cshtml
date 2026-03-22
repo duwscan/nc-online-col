@@ -1,0 +1,157 @@
+@model wnc.Features.Admin.StaffManagement.ViewModels.StaffListViewModel
+@{
+    ViewData["Title"] = "Staff Management";
+}
+
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+        @successMessage
+    </div>
+}
+
+<section class="space-y-6">
+    <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <p class="text-sm font-medium text-blue-600">Quản lý người dùng</p>
+                <h3 class="mt-1 text-2xl font-semibold text-slate-900">Tài khoản nhân viên</h3>
+                <p class="mt-2 text-sm text-slate-500">Quản lý tài khoản nội bộ, phân quyền và quyền truy cập cho cổng quản trị.</p>
+            </div>
+            <a href="/admin/staff/create" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                Tạo tài khoản
+            </a>
+        </div>
+
+        <form method="get" action="/admin/staff" class="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(180px,1fr)_minmax(180px,1fr)_auto]">
+            <div class="space-y-1">
+                <label for="searchTerm" class="block text-sm font-medium text-slate-700">Tìm kiếm</label>
+                <input id="searchTerm" name="searchTerm" value="@Model.SearchTerm" placeholder="Tên đăng nhập, email hoặc SĐT" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+            </div>
+
+            <div class="space-y-1">
+                <label for="roleCode" class="block text-sm font-medium text-slate-700">Vai trò</label>
+                <select id="roleCode" name="roleCode" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                    <option value="">Tất cả vai trò</option>
+                    @foreach (var role in Model.AvailableRoles)
+                    {
+                        if (string.Equals(Model.RoleCode, role.Code, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@role.Code" selected>@role.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@role.Code">@role.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="space-y-1">
+                <label for="status" class="block text-sm font-medium text-slate-700">Trạng thái</label>
+                <select id="status" name="status" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                    <option value="">Tất cả trạng thái</option>
+                    @foreach (var status in Model.AvailableStatuses)
+                    {
+                        if (string.Equals(Model.Status, status, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@status" selected>@status</option>
+                        }
+                        else
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="flex items-end gap-2 lg:justify-end">
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700">Áp dụng</button>
+                <a href="/admin/staff" class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">Đặt lại</a>
+            </div>
+        </form>
+    </article>
+
+    <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
+        <div class="flex flex-col gap-3 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900">Danh sách nhân viên</h3>
+                <p class="mt-1 text-sm text-slate-500">Hiển thị @Model.StartItem-@Model.EndItem của @Model.TotalItems nhân viên.</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 font-medium">Tên đăng nhập</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Email</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Điện thoại</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Vai trò</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Trạng thái</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Đăng nhập cuối</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
+                    @if (Model.StaffMembers.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-500">Không có tài khoản nào phù hợp với bộ lọc.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var staff in Model.StaffMembers)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 font-medium text-slate-900">@(string.IsNullOrWhiteSpace(staff.Username) ? "-" : staff.Username)</td>
+                                <td class="px-6 py-4">@staff.Email</td>
+                                <td class="px-6 py-4">@(string.IsNullOrWhiteSpace(staff.PhoneNumber) ? "-" : staff.PhoneNumber)</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        @foreach (var roleName in staff.RoleNames)
+                                        {
+                                            <span class="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">@roleName</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if (string.Equals(staff.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">ĐANG HOẠT ĐỘNG</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">@staff.Status</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 text-slate-500">@(staff.LastLoginAt.HasValue ? staff.LastLoginAt.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm") : "Chưa đăng nhập")</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        <a href="/admin/staff/edit/@staff.Id" class="inline-flex items-center rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">Sửa</a>
+                                        <form method="post" action="/admin/staff/delete/@staff.Id" onsubmit="return confirm('Bạn có chắc muốn xóa tài khoản này?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="inline-flex items-center rounded-xl border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-700">Xóa</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="flex flex-col gap-3 border-t border-slate-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm text-slate-500">Trang @Model.Page của @Model.TotalPages</p>
+                <div class="flex gap-2">
+                    <a href="/admin/staff?searchTerm=@Model.SearchTerm&roleCode=@Model.RoleCode&status=@Model.Status&page=@Math.Max(1, Model.Page - 1)" class="@(Model.Page <= 1 ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Trước</a>
+                    <a href="/admin/staff?searchTerm=@Model.SearchTerm&roleCode=@Model.RoleCode&status=@Model.Status&page=@Math.Min(Model.TotalPages, Model.Page + 1)" class="@(Model.Page >= Model.TotalPages ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Sau</a>
+                </div>
+            </div>
+        }
+    </article>
+</section>

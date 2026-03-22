@@ -129,7 +129,7 @@ public class AdminLoginPostController(AppDbContext dbContext) : Controller
         dbContext.AuthLogs.Add(CreateAuthLog(user.Id, loginIdentifier, "SUCCESS", null));
         await dbContext.SaveChangesAsync();
 
-        return Url.IsLocalUrl(model.ReturnUrl) ? LocalRedirect(model.ReturnUrl!) : Redirect("/");
+        return Url.IsLocalUrl(model.ReturnUrl) ? LocalRedirect(model.ReturnUrl!) : Redirect("/admin/dashboard");
     }
 
     private async Task LogAttemptAsync(Guid? userId, string loginIdentifier, string status, string? failureReason)

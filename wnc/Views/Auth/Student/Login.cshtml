@@ -1,99 +1,53 @@
 @model StudentLoginViewModel
 @{
-    ViewData["Title"] = "Student Login";
+    ViewData["Title"] = "Đăng nhập Thí sinh";
 }
 
-<section class="mx-auto max-w-4xl space-y-6">
-    <div class="clay-panel p-7 sm:p-9">
-        <div class="space-y-5">
-            <div class="clay-chip inline-flex w-fit px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-clay-ink/70">
-                Candidate Access
-            </div>
-            <div class="max-w-2xl space-y-3">
-                <h1 class="text-3xl font-semibold tracking-tight text-clay-ink sm:text-4xl">Student sign in</h1>
-                <p class="text-sm leading-8 text-clay-ink/74 sm:text-base">
-                    This page is designed for applicants. It explains the requirements up front, keeps the form short, and avoids hidden choices or confusing redirects.
-                </p>
-            </div>
-            <div class="grid gap-3 md:grid-cols-3">
-                <div class="clay-panel-soft p-4 text-sm leading-7 text-clay-ink/74">
-                    <p class="font-medium text-clay-ink">Who can continue</p>
-                    <p class="mt-1">Accounts with the <code>CANDIDATE</code> role.</p>
-                </div>
-                <div class="clay-panel-soft p-4 text-sm leading-7 text-clay-ink/74">
-                    <p class="font-medium text-clay-ink">Demo email</p>
-                    <p class="mt-1"><code>candidate@wnc.local</code></p>
-                </div>
-                <div class="clay-panel-soft p-4 text-sm leading-7 text-clay-ink/74">
-                    <p class="font-medium text-clay-ink">Demo phone</p>
-                    <p class="mt-1"><code>0900000002</code></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div class="clay-panel p-7 sm:p-8">
-            @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
-            {
-                <div role="alert" aria-live="polite" class="clay-alert mb-5 px-5 py-4 text-sm leading-7">
-                    @Model.ErrorMessage
-                </div>
-            }
-
-            <div asp-validation-summary="ModelOnly" role="alert" aria-live="polite" class="clay-alert mb-5 px-5 py-4 text-sm leading-7"></div>
-
-            <form method="post" action="/auth/student/login" class="space-y-6">
-                @Html.AntiForgeryToken()
-                <input asp-for="ReturnUrl" type="hidden"/>
-
-                <div class="space-y-2">
-                    <label asp-for="LoginIdentifier" class="block text-sm font-medium text-clay-ink"></label>
-                    <p id="student-login-identifier-help" class="pl-2 text-sm leading-6 text-clay-ink/64">
-                        Enter the email address or phone number you used for your application account.
-                    </p>
-                    <input asp-for="LoginIdentifier"
-                           autocomplete="username"
-                           aria-describedby="student-login-identifier-help"
-                           class="clay-input w-full px-4 py-3 text-base text-clay-ink placeholder:text-clay-ink/40"
-                           placeholder="name@example.com or 0900000002"/>
-                    <span asp-validation-for="LoginIdentifier" class="pl-2 text-sm text-rose-600"></span>
-                </div>
-
-                <div class="space-y-2">
-                    <label asp-for="Password" class="block text-sm font-medium text-clay-ink"></label>
-                    <p id="student-password-help" class="pl-2 text-sm leading-6 text-clay-ink/64">
-                        Your password is checked securely against a stored hash.
-                    </p>
-                    <input asp-for="Password"
-                           autocomplete="current-password"
-                           aria-describedby="student-password-help"
-                           class="clay-input w-full px-4 py-3 text-base text-clay-ink placeholder:text-clay-ink/40"
-                           placeholder="Enter your password"/>
-                    <span asp-validation-for="Password" class="pl-2 text-sm text-rose-600"></span>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3 pt-2">
-                    <button type="submit" class="clay-button inline-flex min-h-11 items-center justify-center px-6 py-3 text-sm font-semibold">
-                        Sign in
-                    </button>
-                    <a href="/" class="clay-secondary-button inline-flex min-h-11 items-center justify-center px-5 py-3 text-sm font-semibold">
-                        Back Home
-                    </a>
-                </div>
-            </form>
+<section class="mx-auto max-w-md pt-12">
+    <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div class="mb-6 text-center">
+            <h1 class="text-2xl font-semibold text-slate-900">Đăng nhập Thí sinh</h1>
         </div>
 
-        <aside class="clay-panel-soft p-6 sm:p-7">
-            <div class="space-y-4 text-sm leading-7 text-clay-ink/72">
-                <h3 class="text-lg font-semibold text-clay-ink">Before you sign in</h3>
-                <ul class="space-y-3">
-                    <li class="clay-chip px-4 py-3">Use the student page only for applicant accounts.</li>
-                    <li class="clay-chip px-4 py-3">If your account belongs to staff, use the admin page instead.</li>
-                    <li class="clay-chip px-4 py-3">We do not preselect options or infer consent from signing in.</li>
-                </ul>
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div role="alert" aria-live="polite" class="mb-5 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+                @Model.ErrorMessage
             </div>
-        </aside>
+        }
+
+        <div asp-validation-summary="ModelOnly" role="alert" aria-live="polite" class="mb-5 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700"></div>
+
+        <form method="post" action="/auth/student/login" class="space-y-5">
+            @Html.AntiForgeryToken()
+            <input asp-for="ReturnUrl" type="hidden"/>
+
+            <div>
+                <label asp-for="LoginIdentifier" class="block text-sm font-medium text-slate-700 mb-1"></label>
+                <input asp-for="LoginIdentifier"
+                       autocomplete="username"
+                       class="w-full rounded-xl border border-slate-300 px-4 py-3 text-base text-slate-900"
+                       placeholder="Email hoặc số điện thoại"/>
+                <span asp-validation-for="LoginIdentifier" class="text-sm text-rose-600"></span>
+            </div>
+
+            <div>
+                <label asp-for="Password" class="block text-sm font-medium text-slate-700 mb-1"></label>
+                <input asp-for="Password"
+                       autocomplete="current-password"
+                       class="w-full rounded-xl border border-slate-300 px-4 py-3 text-base text-slate-900"
+                       placeholder="Mật khẩu"/>
+                <span asp-validation-for="Password" class="text-sm text-rose-600"></span>
+            </div>
+
+            <button type="submit" class="w-full min-h-11 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                Đăng nhập
+            </button>
+        </form>
+
+        <div class="mt-6 border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
+            <p>Chưa có tài khoản? <a href="/auth/student/signup" class="font-medium text-blue-600 hover:text-blue-700">Đăng ký</a></p>
+        </div>
     </div>
 </section>
 

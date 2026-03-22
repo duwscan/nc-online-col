@@ -1,0 +1,77 @@
+@model wnc.Features.Admin.MajorManagement.ViewModels.MajorFormViewModel
+@{
+    ViewData["Title"] = "Cập nhật ngành";
+}
+
+<section class="mx-auto max-w-5xl">
+    <form method="post" action="/admin/majors/edit/@Model.Id" class="space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden" />
+        <input asp-for="ProgramId" type="hidden" />
+        <input asp-for="MajorCode" type="hidden" />
+
+        <div class="flex flex-col gap-2 border-b border-slate-200 pb-5">
+            <p class="text-sm font-medium text-blue-600">Quản lý tuyển sinh</p>
+            <h3 class="text-2xl font-semibold text-slate-900">Cập nhật ngành đào tạo</h3>
+            <p class="text-sm text-slate-500">Điều chỉnh thông tin ngành và giữ nguyên chương trình đào tạo đã được gán.</p>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+
+        <div class="grid gap-5 md:grid-cols-2">
+            <div class="space-y-1">
+                <label asp-for="MajorCode" class="block text-sm font-medium text-slate-700"></label>
+                <input value="@Model.MajorCode" readonly class="w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 focus:outline-none" />
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="MajorName" class="block text-sm font-medium text-slate-700"></label>
+                <input asp-for="MajorName" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <span asp-validation-for="MajorName" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="ProgramId" class="block text-sm font-medium text-slate-700"></label>
+                <input value="@Model.ProgramName" readonly class="w-full cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 focus:outline-none" />
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="Status" class="block text-sm font-medium text-slate-700"></label>
+                <select asp-for="Status" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                    @foreach (var status in Model.AvailableStatuses)
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+                <span asp-validation-for="Status" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="Quota" class="block text-sm font-medium text-slate-700"></label>
+                <input asp-for="Quota" type="number" min="0" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <span asp-validation-for="Quota" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="DisplayOrder" class="block text-sm font-medium text-slate-700"></label>
+                <input asp-for="DisplayOrder" type="number" min="0" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <span asp-validation-for="DisplayOrder" class="text-sm text-red-600"></span>
+            </div>
+
+            <div class="space-y-1 md:col-span-2">
+                <label asp-for="Description" class="block text-sm font-medium text-slate-700"></label>
+                <textarea asp-for="Description" rows="4" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                <span asp-validation-for="Description" class="text-sm text-red-600"></span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+            <a href="/admin/majors" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">Hủy</a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Lưu thay đổi</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

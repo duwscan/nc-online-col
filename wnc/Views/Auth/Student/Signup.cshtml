@@ -1,0 +1,80 @@
+@model StudentSignupViewModel
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<div class="mx-auto max-w-md">
+    <h1 class="mb-6 text-2xl font-semibold text-gray-900">Tạo tài khoản</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div role="alert" aria-live="polite" class="mb-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            @Model.ErrorMessage
+        </div>
+    }
+
+    <form method="post" action="/auth/student/signup" class="space-y-4">
+        @Html.AntiForgeryToken()
+
+        <div>
+            <label asp-for="FullName" class="block text-sm font-medium text-gray-700">Họ và tên</label>
+            <input asp-for="FullName"
+                   autocomplete="name"
+                   class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+            <span asp-validation-for="FullName" class="mt-1 block text-sm text-red-600"></span>
+        </div>
+
+        <div>
+            <label asp-for="DateOfBirth" class="block text-sm font-medium text-gray-700">Ngày sinh</label>
+            <input asp-for="DateOfBirth"
+                   type="date"
+                   class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+            <span asp-validation-for="DateOfBirth" class="mt-1 block text-sm text-red-600"></span>
+        </div>
+
+        <div>
+            <label asp-for="Gender" class="block text-sm font-medium text-gray-700">Giới tính (tùy chọn)</label>
+            <select asp-for="Gender"
+                    class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option value="">Chọn giới tính</option>
+                <option value="Male">Nam</option>
+                <option value="Female">Nữ</option>
+                <option value="Other">Khác</option>
+            </select>
+        </div>
+
+        <div>
+            <label asp-for="LoginIdentifier" class="block text-sm font-medium text-gray-700">Email hoặc số điện thoại</label>
+            <input asp-for="LoginIdentifier"
+                   autocomplete="username"
+                   class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+            <span asp-validation-for="LoginIdentifier" class="mt-1 block text-sm text-red-600"></span>
+        </div>
+
+        <div>
+            <label asp-for="Password" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
+            <input asp-for="Password"
+                   type="password"
+                   autocomplete="new-password"
+                   class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+            <span asp-validation-for="Password" class="mt-1 block text-sm text-red-600"></span>
+        </div>
+
+        <div>
+            <label asp-for="ConfirmPassword" class="block text-sm font-medium text-gray-700">Xác nhận mật khẩu</label>
+            <input asp-for="ConfirmPassword"
+                   type="password"
+                   autocomplete="new-password"
+                   class="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"/>
+            <span asp-validation-for="ConfirmPassword" class="mt-1 block text-sm text-red-600"></span>
+        </div>
+
+        <button type="submit" class="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Tạo tài khoản
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

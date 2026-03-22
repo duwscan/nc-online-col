@@ -18,25 +18,28 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
 </head>
-<body class="min-h-screen overflow-x-hidden text-clay-ink">
+<body class="min-h-screen overflow-x-hidden bg-slate-50">
+<!-- Header -->
+<header class="bg-blue-600 text-white">
+    <nav class="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
+        <a href="/" class="text-lg font-semibold">Trường Cao đẳng Công nghệ</a>
+        <div class="flex items-center gap-6">
+            <a href="/" class="text-sm font-medium hover:text-blue-200">Trang chủ</a>
+            @if (isAuthenticated)
+            {
+                <span class="text-sm">@(User.Identity?.Name ?? "User")</span>
+                <a href="@logoutPath" class="rounded bg-white/20 px-4 py-1.5 text-sm font-medium hover:bg-white/30">Đăng xuất</a>
+            }
+            else
+            {
+                <a href="/auth/student/login" class="text-sm font-medium hover:text-blue-200">Đăng nhập</a>
+                <a href="/auth/student/register" class="rounded bg-white px-4 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50">Đăng ký</a>
+            }
+        </div>
+    </nav>
+</header>
+
 <main class="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 lg:px-10">
-    <div class="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-
-        @if (isAuthenticated)
-        {
-            <div class="clay-panel-soft flex flex-col gap-3 px-5 py-4 text-sm sm:min-w-80">
-                <div class="font-medium text-clay-ink">@(User.Identity?.Name ?? "Authenticated user")</div>
-                <div class="flex flex-wrap gap-2">
-                    @foreach (var claim in User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Role).Select(x => x.Value).Distinct())
-                    {
-                        <span class="clay-chip px-3 py-1 text-xs font-medium text-clay-ink/80">@claim</span>
-                    }
-                </div>
-                <a href="@logoutPath" class="clay-secondary-button inline-flex w-fit items-center justify-center px-4 py-2 text-sm font-medium">Logout</a>
-            </div>
-        }
-    </div>
-
     @RenderBody()
 </main>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

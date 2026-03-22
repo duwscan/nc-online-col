@@ -1,0 +1,134 @@
+@model RoundProgram
+@{
+    ViewData["Title"] = Model.Program.ProgramName;
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+
+    var isActive = Model.Round.StartAt <= DateTime.UtcNow && Model.Round.EndAt >= DateTime.UtcNow;
+    var isUpcoming = Model.Round.StartAt > DateTime.UtcNow;
+}
+
+<div class="space-y-6">
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">@Model.Program.ProgramName</h1>
+                @if (Model.Major != null)
+                {
+                    <p class="mt-1 text-lg text-slate-600">@Model.Major.MajorName</p>
+                }
+                <p class="mt-2 text-sm text-slate-500">@Model.Round.RoundName · @Model.Round.RoundCode</p>
+            </div>
+            <div class="flex items-center gap-2">
+                @if (isActive)
+                {
+                    <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Đang mở</span>
+                }
+                else if (isUpcoming)
+                {
+                    <span class="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">Sắp mở</span>
+                }
+                else
+                {
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">Đã kết thúc</span>
+                }
+            </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-xl bg-slate-50 p-4">
+                <div class="text-sm text-slate-500">Thời gian</div>
+                <div class="mt-1 text-lg font-semibold text-slate-900">
+                    @Model.Round.StartAt.ToString("dd/MM/yyyy") - @Model.Round.EndAt.ToString("dd/MM/yyyy")
+                </div>
+            </div>
+            <div class="rounded-xl bg-slate-50 p-4">
+                <div class="text-sm text-slate-500">Chỉ tiêu</div>
+                <div class="mt-1 text-lg font-semibold text-slate-900">
+                    @(Model.PublishedQuota ?? Model.Quota)
+                </div>
+            </div>
+            @if (Model.Program.TuitionFee.HasValue)
+            {
+                <div class="rounded-xl bg-slate-50 p-4">
+                    <div class="text-sm text-slate-500">Học phí</div>
+                    <div class="mt-1 text-lg font-semibold text-slate-900">
+                        @Model.Program.TuitionFee.Value.ToString("N0")đ/năm
+                    </div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Program.DurationText))
+            {
+                <div class="rounded-xl bg-slate-50 p-4">
+                    <div class="text-sm text-slate-500">Thời gian học</div>
+                    <div class="mt-1 text-lg font-semibold text-slate-900">
+                        @Model.Program.DurationText
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Program.Description))
+        {
+            <div class="mt-6">
+                <h2 class="text-sm font-medium text-slate-700">Mô tả</h2>
+                <p class="mt-2 text-slate-600">@Model.Program.Description</p>
+            </div>
+        }
+    </div>
+
+    @if (Model.RoundAdmissionMethods.Any())
+    {
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-900">Phương thức xét tuyển</h2>
+            <div class="mt-4 space-y-3">
+                @foreach (var method in Model.RoundAdmissionMethods)
+                {
+                    <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-4">
+                        <div>
+                            <div class="font-medium text-slate-900">@method.Method.MethodName</div>
+                            <div class="mt-1 text-sm text-slate-500">@method.Method.Description</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-slate-500">Điểm chuẩn</div>
+                            <div class="text-lg font-semibold text-blue-600">@method.MinimumScore</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @if (Model.RoundDocumentRequirements.Any())
+    {
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-900">Hồ sơ yêu cầu</h2>
+            <div class="mt-4 space-y-3">
+                @foreach (var req in Model.RoundDocumentRequirements)
+                {
+                    <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-4">
+                        <div>
+                            <div class="font-medium text-slate-900">@req.DocumentType.DocumentName</div>
+                            <div class="mt-1 text-sm text-slate-500">@req.DocumentType.Description</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-slate-500">Tối đa</div>
+                            <div class="text-lg font-semibold text-slate-900">@req.MaxFiles file</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="flex items-center justify-between">
+        <a href="/student/rounds" class="text-sm font-medium text-slate-600 hover:text-slate-900">
+            ← Quay lại danh sách
+        </a>
+        @if (isActive)
+        {
+            <button class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+                Đăng ký ngay
+            </button>
+        }
+    </div>
+</div>

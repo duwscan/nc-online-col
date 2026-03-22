@@ -1,0 +1,138 @@
+@model wnc.Features.Admin.Rounds.ViewModels.RoundsListViewModel
+@{
+    ViewData["Title"] = "Đợt xét tuyển";
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+{
+    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+        @Model.SuccessMessage
+    </div>
+}
+
+<section class="space-y-6">
+    <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <p class="text-sm font-medium text-blue-600">Quản lý tuyển sinh</p>
+                <h3 class="mt-1 text-2xl font-semibold text-slate-900">Danh sách đợt xét tuyển</h3>
+                <p class="mt-2 text-sm text-slate-500">Theo dõi các đợt xét tuyển theo năm, thời gian và trạng thái phát hành.</p>
+            </div>
+            <a href="/admin/rounds/create" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                Tạo đợt xét tuyển
+            </a>
+        </div>
+
+        <form method="get" action="/admin/rounds" class="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.8fr)_minmax(220px,1fr)_auto]">
+            <div class="space-y-1">
+                <label for="searchTerm" class="block text-sm font-medium text-slate-700">Tìm kiếm</label>
+                <input id="searchTerm" name="searchTerm" value="@Model.SearchTerm" placeholder="Mã đợt hoặc tên đợt" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+            </div>
+
+            <div class="space-y-1">
+                <label for="status" class="block text-sm font-medium text-slate-700">Trạng thái</label>
+                <select id="status" name="status" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                    <option value="">Tất cả trạng thái</option>
+                    @foreach (var status in Model.AvailableStatuses)
+                    {
+                        if (string.Equals(Model.Status, status, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@status" selected>@status</option>
+                        }
+                        else
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="flex items-end gap-2 lg:justify-end">
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700">Áp dụng</button>
+                <a href="/admin/rounds" class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">Đặt lại</a>
+            </div>
+        </form>
+    </article>
+
+    <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
+        <div class="flex flex-col gap-3 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900">Danh sách đợt</h3>
+                <p class="mt-1 text-sm text-slate-500">Hiển thị @Model.StartItem-@Model.EndItem của @Model.TotalItems đợt xét tuyển.</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                    <tr>
+                        <th scope="col" class="px-6 py-4 font-medium">Mã đợt</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Tên đợt</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Năm</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Bắt đầu</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Kết thúc</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Trạng thái</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
+                    @if (Model.Rounds.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-500">Không có đợt xét tuyển nào phù hợp với bộ lọc.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var round in Model.Rounds)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 font-semibold text-slate-900">@round.RoundCode</td>
+                                <td class="px-6 py-4">@round.RoundName</td>
+                                <td class="px-6 py-4">@round.AdmissionYear</td>
+                                <td class="px-6 py-4 text-slate-500">@round.StartAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="px-6 py-4 text-slate-500">@round.EndAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="px-6 py-4">
+                                    @if (string.Equals(round.Status, "PUBLISHED", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">PUBLISHED</span>
+                                    }
+                                    else if (string.Equals(round.Status, "CLOSED", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="rounded-full bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">CLOSED</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">DRAFT</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        <a href="/admin/rounds/@round.Id/documents" class="inline-flex items-center rounded-xl border border-blue-200 px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-50 hover:text-blue-700">Hồ sơ</a>
+                                        <a href="/admin/rounds/@round.Id/methods" class="inline-flex items-center rounded-xl border border-purple-200 px-3 py-2 text-xs font-semibold text-purple-600 transition hover:bg-purple-50 hover:text-purple-700">Phương thức</a>
+                                        <a href="/admin/rounds/edit/@round.Id" class="inline-flex items-center rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">Sửa</a>
+                                        <form method="post" action="/admin/rounds/delete/@round.Id" onsubmit="return confirm('Bạn có chắc muốn xóa đợt xét tuyển này?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="inline-flex items-center rounded-xl border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-700">Xóa</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <div class="flex flex-col gap-3 border-t border-slate-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-sm text-slate-500">Trang @Model.Page của @Model.TotalPages</p>
+                <div class="flex gap-2">
+                    <a href="/admin/rounds?searchTerm=@Model.SearchTerm&status=@Model.Status&page=@Math.Max(1, Model.Page - 1)" class="@(Model.Page <= 1 ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Trước</a>
+                    <a href="/admin/rounds?searchTerm=@Model.SearchTerm&status=@Model.Status&page=@Math.Min(Model.TotalPages, Model.Page + 1)" class="@(Model.Page >= Model.TotalPages ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Sau</a>
+                </div>
+            </div>
+        }
+    </article>
+</section>
