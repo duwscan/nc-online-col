@@ -125,8 +125,8 @@ public class AdminMethodsController(AppDbContext dbContext) : Controller
         if (method == null)
             return NotFound();
 
-        var isInUse = await dbContext.RoundAdmissionMethods
-            .AnyAsync(ram => ram.MethodId == id);
+        var isInUse = await dbContext.RoundPrograms
+            .AnyAsync(rp => rp.AdmissionMethods.Any(am => am.Id == id));
         if (isInUse)
         {
             TempData["ErrorMessage"] = "Phương thức đang được sử dụng, không thể xóa.";

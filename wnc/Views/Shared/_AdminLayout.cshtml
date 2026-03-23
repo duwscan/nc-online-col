@@ -7,7 +7,9 @@
     var isProgramManagementPage = currentPath.StartsWith("/admin/programs", StringComparison.OrdinalIgnoreCase);
     var isMajorManagementPage = currentPath.StartsWith("/admin/majors", StringComparison.OrdinalIgnoreCase);
     var isRoundsPage = currentPath.StartsWith("/admin/rounds", StringComparison.OrdinalIgnoreCase);
-    var isMethodsPage = currentPath.StartsWith("/admin/methods", StringComparison.OrdinalIgnoreCase) && !currentPath.Contains("/round");
+    var isMethodsPage = currentPath.StartsWith("/admin/methods", StringComparison.OrdinalIgnoreCase) || currentPath.StartsWith("/admin/rounds", StringComparison.OrdinalIgnoreCase) && currentPath.Contains("/methods");
+    var currentRoundId = ViewData["CurrentRoundId"] as Guid?;
+    var methodsLink = currentRoundId.HasValue ? $"/admin/rounds/{currentRoundId}/methods" : "/admin/methods";
     var isDocumentTypesPage = currentPath.StartsWith("/admin/document-types", StringComparison.OrdinalIgnoreCase);
 }
 <!DOCTYPE html>
@@ -76,7 +78,7 @@
                         <div class="ml-8 space-y-1 border-l border-slate-200 pl-4">
                             <a href="/admin/rounds" class="@(!isRoundsPage && !isMethodsPage && !isDocumentTypesPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Đợt xét tuyển</a>
                             <a href="/admin/document-types" class="@(isDocumentTypesPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Loại giấy tờ</a>
-                            <a href="/admin/methods" class="@(isMethodsPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Phương thức xét tuyển</a>
+                            <a href="@methodsLink" class="@(isMethodsPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Phương thức xét tuyển</a>
                             <a href="/admin/programs" class="@(isProgramManagementPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Chương trình đào tạo</a>
                             <a href="/admin/majors" class="@(isMajorManagementPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Ngành học</a>
                             <a href="#" class="block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600">Thí sinh</a>

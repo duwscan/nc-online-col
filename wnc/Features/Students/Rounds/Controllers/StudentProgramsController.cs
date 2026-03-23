@@ -15,9 +15,8 @@ public class StudentProgramsController(AppDbContext dbContext) : Controller
             .Include(x => x.Round)
             .Include(x => x.Program)
             .Include(x => x.Major)
-            .Include(x => x.RoundAdmissionMethods)
-                .ThenInclude(x => x.Method)
-            .Include(x => x.RoundDocumentRequirements)
+            .Include(x => x.AdmissionMethods)
+            .Include(x => x.DocumentRequirements)
                 .ThenInclude(x => x.DocumentType)
             .FirstOrDefaultAsync(x => x.Id == id);
 

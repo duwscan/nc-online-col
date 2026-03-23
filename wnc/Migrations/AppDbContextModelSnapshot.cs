@@ -1991,7 +1991,7 @@ namespace wnc.Migrations
                         .IsRequired();
 
                     b.HasOne("wnc.Models.RoundProgram", "RoundProgram")
-                        .WithMany("RoundAdmissionMethods")
+                        .WithMany("AdmissionMethods")
                         .HasForeignKey("RoundProgramId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2010,7 +2010,7 @@ namespace wnc.Migrations
                         .IsRequired();
 
                     b.HasOne("wnc.Models.RoundProgram", "RoundProgram")
-                        .WithMany("RoundDocumentRequirements")
+                        .WithMany("DocumentRequirements")
                         .HasForeignKey("RoundProgramId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2177,9 +2177,9 @@ namespace wnc.Migrations
                 {
                     b.Navigation("AdmissionApplications");
 
-                    b.Navigation("RoundAdmissionMethods");
+                    b.Navigation("AdmissionMethods");
 
-                    b.Navigation("RoundDocumentRequirements");
+                    b.Navigation("DocumentRequirements");
                 });
 
             modelBuilder.Entity("wnc.Models.TrainingProgram", b =>

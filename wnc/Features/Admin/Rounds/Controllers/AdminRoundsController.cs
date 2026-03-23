@@ -13,6 +13,43 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
 {
     private static readonly string[] RoundStatuses = ["DRAFT", "PUBLISHED", "CLOSED"];
 
+    [HttpPost("/admin/rounds/test-debug")]
+    [ValidateAntiForgeryToken]
+    public IActionResult TestDebug(EditRoundViewModel model)
+    {
+        var form = HttpContext.Request.Form;
+        var addProgramIds = form["addProgramIds"].ToString();
+        var removeProgramIds = form["removeRoundProgramIds"].ToString();
+        var selectedMethodIds = string.Join(", ", form["SelectedMethodIds"].ToList());
+
+        return Json(new
+        {
+            modelId = model.Id,
+            addProgramIds,
+            removeProgramIds,
+            selectedMethodIds,
+            roundCode = model.RoundCode,
+            roundName = model.RoundName
+        });
+    }
+
+    [HttpPost("/admin/rounds/test-documents-debug")]
+    [ValidateAntiForgeryToken]
+    public IActionResult TestDocumentsDebug(EditRoundDocumentsViewModel model)
+    {
+        var form = HttpContext.Request.Form;
+        var docKeys = form.Keys.Where(k => k.StartsWith("doc_")).ToList();
+        var requiredKeys = form.Keys.Where(k => k.StartsWith("required_")).ToList();
+
+        return Json(new
+        {
+            roundId = model.RoundId,
+            docKeys,
+            requiredKeys,
+            formKeys = form.Keys.ToList()
+        });
+    }
+
     [HttpGet("/admin/rounds")]
     public async Task<IActionResult> Index(string? searchTerm = null, string? status = null, int page = 1)
     {
@@ -85,10 +122,23 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
             })
             .ToListAsync();
 
+        var availableDocumentTypes = await dbContext.DocumentTypes
+            .AsNoTracking()
+            .Where(dt => dt.Status == "ACTIVE")
+            .OrderBy(dt => dt.DocumentName)
+            .Select(dt => new DocumentTypeOption
+            {
+                Id = dt.Id,
+                DocumentCode = dt.DocumentCode,
+                DocumentName = dt.DocumentName
+            })
+            .ToListAsync();
+
         var model = new CreateRoundViewModel
         {
             AvailableStatuses = RoundStatuses,
-            AvailableMethods = availableMethods
+            AvailableMethods = availableMethods,
+            AvailableDocumentTypes = availableDocumentTypes
         };
 
         return View("~/Features/Admin/Rounds/Views/Create.cshtml", model);
@@ -113,6 +163,17 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
                     Id = m.Id,
                     MethodCode = m.MethodCode,
                     MethodName = m.MethodName
+                })
+                .ToListAsync();
+            model.AvailableDocumentTypes = await dbContext.DocumentTypes
+                .AsNoTracking()
+                .Where(dt => dt.Status == "ACTIVE")
+                .OrderBy(dt => dt.DocumentName)
+                .Select(dt => new DocumentTypeOption
+                {
+                    Id = dt.Id,
+                    DocumentCode = dt.DocumentCode,
+                    DocumentName = dt.DocumentName
                 })
                 .ToListAsync();
             return View("~/Features/Admin/Rounds/Views/Create.cshtml", model);
@@ -146,12 +207,14 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
     [HttpGet("/admin/rounds/edit/{id:guid}")]
     public async Task<IActionResult> Edit(Guid id)
     {
+        ViewData["CurrentRoundId"] = id;
+
         var round = await dbContext.AdmissionRounds
             .AsNoTracking()
             .Include(r => r.RoundPrograms)
                 .ThenInclude(rp => rp.Program)
             .Include(r => r.RoundPrograms)
-                .ThenInclude(rp => rp.RoundAdmissionMethods)
+                .ThenInclude(rp => rp.AdmissionMethods)
             .SingleOrDefaultAsync(item => item.Id == id && item.DeletedAt == null);
 
         if (round is null)
@@ -207,12 +270,12 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
                 Quota = rp.Quota,
                 PublishedQuota = rp.PublishedQuota,
                 Status = rp.Status,
-                AssignedMethodIds = rp.RoundAdmissionMethods.Select(rm => rm.MethodId).ToList()
+                AssignedMethodIds = rp.AdmissionMethods.Select(a => a.Id).ToList()
             }).ToList(),
             AvailablePrograms = availablePrograms,
             AvailableMethods = availableMethods,
             SelectedMethodIds = round.RoundPrograms
-                .SelectMany(rp => rp.RoundAdmissionMethods.Select(rm => rm.MethodId))
+                .SelectMany(rp => rp.AdmissionMethods.Select(a => a.Id))
                 .Distinct()
                 .ToList()
         };
@@ -233,8 +296,7 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
         await ValidateRoundInputAsync(model.RoundCode, model.Status, id);
 
         var round = await dbContext.AdmissionRounds
-            .Include(r => r.RoundPrograms)
-                .ThenInclude(rp => rp.RoundAdmissionMethods)
+            .AsNoTracking()
             .SingleOrDefaultAsync(item => item.Id == id && item.DeletedAt == null);
 
         if (round is null)
@@ -244,33 +306,11 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
 
         if (!ModelState.IsValid)
         {
-            model.AvailableStatuses = RoundStatuses;
-            model.AssignedPrograms = round.RoundPrograms.Select(rp => new RoundProgramItemViewModel
-            {
-                Id = rp.Id,
-                ProgramId = rp.ProgramId,
-                ProgramCode = rp.Program.ProgramCode,
-                ProgramName = rp.Program.ProgramName,
-                EducationType = rp.Program.EducationType,
-                Quota = rp.Quota,
-                PublishedQuota = rp.PublishedQuota,
-                Status = rp.Status,
-                AssignedMethodIds = rp.RoundAdmissionMethods.Select(rm => rm.MethodId).ToList()
-            }).ToList();
-            model.AvailableMethods = await dbContext.AdmissionMethods
-                .AsNoTracking()
-                .Where(m => m.Status == "ACTIVE")
-                .OrderBy(m => m.MethodName)
-                .Select(m => new AdmissionMethodOption
-                {
-                    Id = m.Id,
-                    MethodCode = m.MethodCode,
-                    MethodName = m.MethodName
-                })
-                .ToListAsync();
-            return View("~/Features/Admin/Rounds/Views/Edit.cshtml", model);
+            return await LoadEditViewModel(id, model);
         }
 
+        // Update the round entity first
+        dbContext.AdmissionRounds.Update(round);
         round.RoundCode = model.RoundCode;
         round.RoundName = model.RoundName;
         round.AdmissionYear = model.AdmissionYear;
@@ -281,35 +321,63 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
         round.AllowEnrollmentConfirmation = model.AllowEnrollmentConfirmation;
         round.UpdatedAt = DateTime.UtcNow;
 
+        await dbContext.SaveChangesAsync();
+
+        // Now handle programs separately
+        await HandleRoundProgramsAsync(id, model);
+
+        TempData["SuccessMessage"] = "Cập nhật đợt xét tuyển thành công.";
+        return Redirect("/admin/rounds");
+    }
+
+    private async Task HandleRoundProgramsAsync(Guid roundId, EditRoundViewModel model)
+    {
         var form = HttpContext.Request.Form;
-        var addedProgramIds = form["addProgramIds"]
-            .Where(v => !string.IsNullOrEmpty(v) && Guid.TryParse(v, out _))
-            .Select(v => Guid.Parse(v!))
+        var addedProgramIdsRaw = form["addProgramIds"].FirstOrDefault() ?? string.Empty;
+        var addedProgramIds = addedProgramIdsRaw
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Where(v => Guid.TryParse(v.Trim(), out _))
+            .Select(v => Guid.Parse(v.Trim()))
             .ToHashSet();
-        var removedRoundProgramIds = form["removeRoundProgramIds"]
-            .Where(v => !string.IsNullOrEmpty(v) && Guid.TryParse(v, out _))
-            .Select(v => Guid.Parse(v!))
+        var removedRoundProgramIdsRaw = form["removeRoundProgramIds"].FirstOrDefault() ?? string.Empty;
+        var removedRoundProgramIds = removedRoundProgramIdsRaw
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Where(v => Guid.TryParse(v.Trim(), out _))
+            .Select(v => Guid.Parse(v.Trim()))
             .ToHashSet();
 
+        // Handle removals
         if (removedRoundProgramIds.Count > 0)
         {
-            await dbContext.RoundPrograms
-                .Where(rp => removedRoundProgramIds.Contains(rp.Id))
-                .ExecuteDeleteAsync();
+            // First delete related RoundAdmissionMethods
+            var relatedMethods = await dbContext.RoundAdmissionMethods
+                .Where(ram => removedRoundProgramIds.Contains(ram.RoundProgramId))
+                .ToListAsync();
+            dbContext.RoundAdmissionMethods.RemoveRange(relatedMethods);
 
-            var removedEntities = round.RoundPrograms
+            // Then delete related RoundDocumentRequirements
+            var relatedDocs = await dbContext.RoundDocumentRequirements
+                .Where(rdr => removedRoundProgramIds.Contains(rdr.RoundProgramId))
+                .ToListAsync();
+            dbContext.RoundDocumentRequirements.RemoveRange(relatedDocs);
+
+            await dbContext.SaveChangesAsync();
+
+            // Now delete the RoundPrograms
+            var toRemove = await dbContext.RoundPrograms
                 .Where(rp => removedRoundProgramIds.Contains(rp.Id))
-                .ToList();
-            foreach (var entity in removedEntities)
-            {
-                dbContext.Entry(entity).State = EntityState.Detached;
-            }
-            round.RoundPrograms.Clear();
+                .ToListAsync();
+            dbContext.RoundPrograms.RemoveRange(toRemove);
+            await dbContext.SaveChangesAsync();
         }
 
+        // Handle additions
         if (addedProgramIds.Count > 0)
         {
-            var existingProgramIds = round.RoundPrograms.Select(rp => rp.ProgramId).ToHashSet();
+            var existingProgramIds = await dbContext.RoundPrograms
+                .Where(rp => rp.RoundId == roundId)
+                .Select(rp => rp.ProgramId)
+                .ToListAsync();
             var toAdd = addedProgramIds.Where(pid => !existingProgramIds.Contains(pid)).ToList();
 
             foreach (var programId in toAdd)
@@ -317,35 +385,43 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
                 var program = await dbContext.TrainingPrograms.FindAsync(programId);
                 if (program != null)
                 {
-                    round.RoundPrograms.Add(new RoundProgram
+                    var newRp = new RoundProgram
                     {
                         Id = Guid.NewGuid(),
-                        RoundId = round.Id,
+                        RoundId = roundId,
                         ProgramId = programId,
                         Quota = program.Quota,
                         PublishedQuota = program.Quota,
                         Status = "ACTIVE",
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow
-                    });
+                    };
+                    dbContext.RoundPrograms.Add(newRp);
                 }
             }
+            await dbContext.SaveChangesAsync();
         }
 
-        // Handle admission methods
-        var selectedMethodIds = form["SelectedMethodIds"]
+        // Handle methods - RoundAdmissionMethod join table
+        var selectedMethodIdsRaw = form["SelectedMethodIds"].ToList();
+        var selectedMethodIds = selectedMethodIdsRaw
             .Where(v => !string.IsNullOrEmpty(v) && Guid.TryParse(v, out _))
             .Select(v => Guid.Parse(v!))
             .ToHashSet();
 
-        foreach (var rp in round.RoundPrograms)
+        var roundPrograms = await dbContext.RoundPrograms
+            .Include(rp => rp.AdmissionMethods)
+            .Where(rp => rp.RoundId == roundId)
+            .ToListAsync();
+
+        foreach (var rp in roundPrograms)
         {
-            var existingMethodIds = rp.RoundAdmissionMethods.Select(rm => rm.MethodId).ToHashSet();
+            var existingMethodIds = rp.AdmissionMethods.Select(a => a.MethodId).ToHashSet();
 
             // Add new methods
-            foreach (var methodId in selectedMethodIds.Where(mid => !existingMethodIds.Contains(mid)))
+            foreach (var methodId in selectedMethodIds.Where(id => !existingMethodIds.Contains(id)))
             {
-                rp.RoundAdmissionMethods.Add(new RoundAdmissionMethod
+                dbContext.RoundAdmissionMethods.Add(new RoundAdmissionMethod
                 {
                     Id = Guid.NewGuid(),
                     RoundProgramId = rp.Id,
@@ -356,17 +432,143 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
             }
 
             // Remove deselected methods
-            var toRemove = rp.RoundAdmissionMethods.Where(rm => !selectedMethodIds.Contains(rm.MethodId)).ToList();
-            foreach (var rm in toRemove)
-            {
-                dbContext.RoundAdmissionMethods.Remove(rm);
-            }
+            var toRemove = rp.AdmissionMethods
+                .Where(a => !selectedMethodIds.Contains(a.MethodId))
+                .ToList();
+            dbContext.RoundAdmissionMethods.RemoveRange(toRemove);
         }
 
         await dbContext.SaveChangesAsync();
 
-        TempData["SuccessMessage"] = "Cập nhật đợt xét tuyển thành công.";
-        return Redirect("/admin/rounds");
+        // Handle document requirements
+        var selectedDocumentTypeIdsRaw = form["SelectedDocumentTypeIds"].ToList();
+        var selectedDocumentTypeIds = selectedDocumentTypeIdsRaw
+            .Where(v => !string.IsNullOrEmpty(v) && Guid.TryParse(v, out _))
+            .Select(v => Guid.Parse(v!))
+            .ToHashSet();
+
+        var roundProgramsWithDocs = await dbContext.RoundPrograms
+            .Where(rp => rp.RoundId == roundId)
+            .ToListAsync();
+
+        foreach (var rp in roundProgramsWithDocs)
+        {
+            var existingDocs = await dbContext.RoundDocumentRequirements
+                .Where(rdr => rdr.RoundProgramId == rp.Id)
+                .Select(rdr => rdr.DocumentTypeId)
+                .ToListAsync();
+
+            var existingDocIds = existingDocs.ToHashSet();
+
+            // Add new document requirements
+            foreach (var docTypeId in selectedDocumentTypeIds.Where(did => !existingDocIds.Contains(did)))
+            {
+                dbContext.RoundDocumentRequirements.Add(new RoundDocumentRequirement
+                {
+                    Id = Guid.NewGuid(),
+                    RoundProgramId = rp.Id,
+                    DocumentTypeId = docTypeId,
+                    IsRequired = true,
+                    RequiresNotarization = false,
+                    RequiresOriginalCopy = false,
+                    MaxFiles = 1,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            // Remove deselected document requirements
+            var docsToRemove = await dbContext.RoundDocumentRequirements
+                .Where(rdr => rdr.RoundProgramId == rp.Id && !selectedDocumentTypeIds.Contains(rdr.DocumentTypeId))
+                .ToListAsync();
+            dbContext.RoundDocumentRequirements.RemoveRange(docsToRemove);
+        }
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    private async Task<IActionResult> LoadEditViewModel(Guid id, EditRoundViewModel? model = null)
+    {
+        var round = await dbContext.AdmissionRounds
+            .AsNoTracking()
+            .Include(r => r.RoundPrograms)
+                .ThenInclude(rp => rp.Program)
+            .Include(r => r.RoundPrograms)
+                .ThenInclude(rp => rp.AdmissionMethods)
+            .Include(r => r.RoundPrograms)
+                .ThenInclude(rp => rp.DocumentRequirements)
+            .SingleOrDefaultAsync(item => item.Id == id && item.DeletedAt == null);
+
+        if (round is null)
+        {
+            return NotFound();
+        }
+
+        var availablePrograms = await dbContext.TrainingPrograms
+            .AsNoTracking()
+            .Where(p => p.Status == "ACTIVE")
+            .OrderBy(p => p.DisplayOrder)
+            .ThenBy(p => p.ProgramName)
+            .Select(p => new ProgramOptionViewModel
+            {
+                Id = p.Id,
+                ProgramCode = p.ProgramCode,
+                ProgramName = p.ProgramName,
+                EducationType = p.EducationType
+            })
+            .ToListAsync();
+
+        var availableMethods = await dbContext.AdmissionMethods
+            .AsNoTracking()
+            .Where(m => m.Status == "ACTIVE")
+            .OrderBy(m => m.MethodName)
+            .Select(m => new AdmissionMethodOption
+            {
+                Id = m.Id,
+                MethodCode = m.MethodCode,
+                MethodName = m.MethodName
+            })
+            .ToListAsync();
+
+        var availableDocumentTypes = await dbContext.DocumentTypes
+            .AsNoTracking()
+            .Where(dt => dt.Status == "ACTIVE")
+            .OrderBy(dt => dt.DocumentName)
+            .Select(dt => new DocumentTypeOption
+            {
+                Id = dt.Id,
+                DocumentCode = dt.DocumentCode,
+                DocumentName = dt.DocumentName
+            })
+            .ToListAsync();
+
+        var viewModel = model ?? new EditRoundViewModel();
+        viewModel.AvailableStatuses = RoundStatuses;
+        viewModel.AssignedPrograms = round.RoundPrograms.Select(rp => new RoundProgramItemViewModel
+        {
+            Id = rp.Id,
+            ProgramId = rp.ProgramId,
+            ProgramCode = rp.Program.ProgramCode,
+            ProgramName = rp.Program.ProgramName,
+            EducationType = rp.Program.EducationType,
+            Quota = rp.Quota,
+            PublishedQuota = rp.PublishedQuota,
+            Status = rp.Status,
+            AssignedMethodIds = rp.AdmissionMethods.Select(a => a.Id).ToList(),
+            AssignedDocumentTypeIds = rp.DocumentRequirements.Select(rdr => rdr.DocumentTypeId).ToList()
+        }).ToList();
+        viewModel.AvailablePrograms = availablePrograms;
+        viewModel.AvailableMethods = availableMethods;
+        viewModel.AvailableDocumentTypes = availableDocumentTypes;
+        viewModel.SelectedMethodIds = round.RoundPrograms
+            .SelectMany(rp => rp.AdmissionMethods.Select(a => a.Id))
+            .Distinct()
+            .ToList();
+        viewModel.SelectedDocumentTypeIds = round.RoundPrograms
+            .SelectMany(rp => rp.DocumentRequirements.Select(rdr => rdr.DocumentTypeId))
+            .Distinct()
+            .ToList();
+
+        return View("~/Features/Admin/Rounds/Views/Edit.cshtml", viewModel);
     }
 
     [HttpPost("/admin/rounds/delete/{id:guid}")]
@@ -400,7 +602,7 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
             .Include(r => r.RoundPrograms)
                 .ThenInclude(rp => rp.Major)
             .Include(r => r.RoundPrograms)
-                .ThenInclude(rp => rp.RoundDocumentRequirements)
+                .ThenInclude(rp => rp.DocumentRequirements)
                     .ThenInclude(rdr => rdr.DocumentType)
             .FirstOrDefaultAsync(r => r.Id == roundId && r.DeletedAt == null);
 
@@ -422,7 +624,7 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
                 Id = rp.Id,
                 ProgramName = rp.Program.ProgramName,
                 MajorName = rp.Major?.MajorName,
-                Requirements = rp.RoundDocumentRequirements.Select(rdr => new RoundDocumentRequirementViewModel
+                Requirements = rp.DocumentRequirements.Select(rdr => new RoundDocumentRequirementViewModel
                 {
                     Id = rdr.Id,
                     RoundProgramId = rdr.RoundProgramId,
@@ -450,46 +652,56 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditDocumentsSave(Guid roundId, EditRoundDocumentsViewModel model)
     {
-        var round = await dbContext.AdmissionRounds
-            .Include(r => r.RoundPrograms)
-                .ThenInclude(rp => rp.RoundDocumentRequirements)
-            .FirstOrDefaultAsync(r => r.Id == roundId && r.DeletedAt == null);
+        var roundExists = await dbContext.AdmissionRounds
+            .AnyAsync(r => r.Id == roundId && r.DeletedAt == null);
 
-        if (round is null)
+        if (!roundExists)
             return NotFound();
 
         var form = HttpContext.Request.Form;
+
+        // Get all round programs for this round
+        var roundPrograms = await dbContext.RoundPrograms
+            .Where(rp => rp.RoundId == roundId)
+            .ToListAsync();
+
+        // Parse submitted document type IDs - keys like "doc_<docTypeId>"
         var submittedDocTypeIds = form.Keys
             .Where(k => k.StartsWith("doc_"))
-            .Select(k => Guid.Parse(k.Replace("doc_", "")))
+            .Select(k => k.Replace("doc_", ""))
+            .Where(k => Guid.TryParse(k, out _))
+            .Select(k => Guid.Parse(k))
             .Distinct()
             .ToList();
 
-        foreach (var rp in round.RoundPrograms)
+        foreach (var rp in roundPrograms)
         {
-            var existingReqs = rp.RoundDocumentRequirements.ToList();
+            // Get existing requirements for this round program
+            var existingReqs = await dbContext.RoundDocumentRequirements
+                .Where(rdr => rdr.RoundProgramId == rp.Id)
+                .ToListAsync();
+
+            // Find submitted doc type IDs for this program
             var submittedForRp = submittedDocTypeIds
-                .SelectMany(docTypeId =>
-                    form.Keys
-                        .Where(k => k == $"doc_{docTypeId}")
-                        .Select(_ => new { DocTypeId = docTypeId, RpId = rp.Id }))
-                .Where(x => x.RpId == rp.Id)
-                .Select(x => x.DocTypeId)
-                .ToHashSet();
+                .Where(docTypeId => form.Keys.Contains($"doc_{docTypeId}"))
+                .ToList();
 
-            var toRemove = existingReqs.Where(x => !submittedForRp.Contains(x.DocumentTypeId)).ToList();
-            foreach (var req in toRemove)
-                dbContext.RoundDocumentRequirements.Remove(req);
+            // Remove deselected
+            var toRemove = existingReqs
+                .Where(rdr => !submittedForRp.Contains(rdr.DocumentTypeId))
+                .ToList();
+            dbContext.RoundDocumentRequirements.RemoveRange(toRemove);
 
+            // Add or update
             foreach (var docTypeId in submittedForRp)
             {
-                var isRequired = form[$"required_{docTypeId}"].FirstOrDefault() == "true";
-                var requiresNotarization = form[$"notarization_{docTypeId}"].FirstOrDefault() == "true";
-                var requiresOriginalCopy = form[$"original_{docTypeId}"].FirstOrDefault() == "true";
-                var maxFilesStr = form[$"maxfiles_{docTypeId}"].FirstOrDefault();
+                var isRequired = form[$"required_{rp.Id}_{docTypeId}"].FirstOrDefault() == "true";
+                var requiresNotarization = form[$"notarization_{rp.Id}_{docTypeId}"].FirstOrDefault() == "true";
+                var requiresOriginalCopy = form[$"original_{rp.Id}_{docTypeId}"].FirstOrDefault() == "true";
+                var maxFilesStr = form[$"maxfiles_{rp.Id}_{docTypeId}"].FirstOrDefault();
                 int.TryParse(maxFilesStr, out var maxFiles);
 
-                var existing = rp.RoundDocumentRequirements.FirstOrDefault(x => x.DocumentTypeId == docTypeId);
+                var existing = existingReqs.FirstOrDefault(rdr => rdr.DocumentTypeId == docTypeId);
                 if (existing != null)
                 {
                     existing.IsRequired = isRequired;
@@ -499,7 +711,7 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
                 }
                 else
                 {
-                    rp.RoundDocumentRequirements.Add(new RoundDocumentRequirement
+                    dbContext.RoundDocumentRequirements.Add(new RoundDocumentRequirement
                     {
                         Id = Guid.NewGuid(),
                         RoundProgramId = rp.Id,
@@ -529,7 +741,7 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
             .Include(r => r.RoundPrograms)
                 .ThenInclude(rp => rp.Major)
             .Include(r => r.RoundPrograms)
-                .ThenInclude(rp => rp.RoundAdmissionMethods)
+                .ThenInclude(rp => rp.AdmissionMethods)
                     .ThenInclude(ram => ram.Method)
             .FirstOrDefaultAsync(r => r.Id == roundId && r.DeletedAt == null);
 
@@ -551,10 +763,10 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
                 Id = rp.Id,
                 ProgramName = rp.Program.ProgramName,
                 MajorName = rp.Major?.MajorName,
-                Methods = rp.RoundAdmissionMethods.Select(ram => new RoundMethodViewModel
+                Methods = rp.AdmissionMethods.Select(ram => new RoundMethodViewModel
                 {
                     Id = ram.Id,
-                    RoundProgramId = ram.RoundProgramId,
+                    RoundProgramId = rp.Id,
                     MethodId = ram.MethodId,
                     MethodName = ram.Method.MethodName,
                     MethodCode = ram.Method.MethodCode,
@@ -582,7 +794,8 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
     {
         var round = await dbContext.AdmissionRounds
             .Include(r => r.RoundPrograms)
-                .ThenInclude(rp => rp.RoundAdmissionMethods)
+                .ThenInclude(rp => rp.AdmissionMethods)
+                    .ThenInclude(ram => ram.Method)
             .FirstOrDefaultAsync(r => r.Id == roundId && r.DeletedAt == null);
 
         if (round is null)
@@ -597,42 +810,29 @@ public class AdminRoundsController(AppDbContext dbContext) : Controller
 
         foreach (var rp in round.RoundPrograms)
         {
-            var existingMethods = rp.RoundAdmissionMethods.ToList();
+            var existingMethodIds = rp.AdmissionMethods.Select(ram => ram.MethodId).ToHashSet();
             var submittedForRp = submittedMethodIds
-                .SelectMany(methodId =>
-                    form.Keys
-                        .Where(k => k == $"method_{methodId}")
-                        .Select(_ => new { MethodId = methodId, RpId = rp.Id }))
-                .Where(x => x.RpId == rp.Id)
-                .Select(x => x.MethodId)
+                .Where(methodId => form.Keys.Contains($"method_{methodId}_{rp.Id}"))
                 .ToHashSet();
 
-            var toRemove = existingMethods.Where(x => !submittedForRp.Contains(x.MethodId)).ToList();
-            foreach (var method in toRemove)
-                dbContext.RoundAdmissionMethods.Remove(method);
+            // Remove deselected
+            var methodsToRemove = rp.AdmissionMethods
+                .Where(ram => !submittedForRp.Contains(ram.MethodId))
+                .ToList();
+            foreach (var ram in methodsToRemove)
+                dbContext.RoundAdmissionMethods.Remove(ram);
 
-            foreach (var methodId in submittedForRp)
+            // Add new
+            foreach (var methodId in submittedForRp.Where(id => !existingMethodIds.Contains(id)))
             {
-                var minScoreStr = form[$"minscore_{methodId}"].FirstOrDefault();
-                decimal.TryParse(minScoreStr, out var minScore);
-
-                var existing = rp.RoundAdmissionMethods.FirstOrDefault(x => x.MethodId == methodId);
-                if (existing != null)
+                dbContext.RoundAdmissionMethods.Add(new RoundAdmissionMethod
                 {
-                    existing.MinimumScore = minScore;
-                }
-                else
-                {
-                    rp.RoundAdmissionMethods.Add(new RoundAdmissionMethod
-                    {
-                        Id = Guid.NewGuid(),
-                        RoundProgramId = rp.Id,
-                        MethodId = methodId,
-                        MinimumScore = minScore,
-                        Status = "ACTIVE",
-                        CreatedAt = DateTime.UtcNow
-                    });
-                }
+                    Id = Guid.NewGuid(),
+                    RoundProgramId = rp.Id,
+                    MethodId = methodId,
+                    Status = "ACTIVE",
+                    CreatedAt = DateTime.UtcNow
+                });
             }
         }
 

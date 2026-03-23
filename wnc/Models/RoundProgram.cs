@@ -17,7 +17,7 @@ public class RoundProgram
     public AdmissionRound Round { get; set; } = null!;
     public TrainingProgram Program { get; set; } = null!;
     public Major? Major { get; set; }
-    public ICollection<RoundAdmissionMethod> RoundAdmissionMethods { get; set; } = new List<RoundAdmissionMethod>();
-    public ICollection<RoundDocumentRequirement> RoundDocumentRequirements { get; set; } = new List<RoundDocumentRequirement>();
+    public ICollection<RoundAdmissionMethod> AdmissionMethods { get; set; } = new List<RoundAdmissionMethod>();
+    public ICollection<RoundDocumentRequirement> DocumentRequirements { get; set; } = new List<RoundDocumentRequirement>();
     public ICollection<AdmissionApplication> AdmissionApplications { get; set; } = new List<AdmissionApplication>();
 }

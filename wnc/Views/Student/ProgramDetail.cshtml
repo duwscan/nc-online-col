@@ -76,21 +76,17 @@
         }
     </div>
 
-    @if (Model.RoundAdmissionMethods.Any())
+    @if (Model.AdmissionMethods.Any())
     {
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">Phương thức xét tuyển</h2>
             <div class="mt-4 space-y-3">
-                @foreach (var method in Model.RoundAdmissionMethods)
+                @foreach (var method in Model.AdmissionMethods)
                 {
                     <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-4">
                         <div>
                             <div class="font-medium text-slate-900">@method.Method.MethodName</div>
                             <div class="mt-1 text-sm text-slate-500">@method.Method.Description</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm text-slate-500">Điểm chuẩn</div>
-                            <div class="text-lg font-semibold text-blue-600">@method.MinimumScore</div>
                         </div>
                     </div>
                 }
@@ -98,12 +94,12 @@
         </div>
     }
 
-    @if (Model.RoundDocumentRequirements.Any())
+    @if (Model.DocumentRequirements.Any())
     {
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h2 class="text-lg font-semibold text-slate-900">Hồ sơ yêu cầu</h2>
             <div class="mt-4 space-y-3">
-                @foreach (var req in Model.RoundDocumentRequirements)
+                @foreach (var req in Model.DocumentRequirements)
                 {
                     <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 p-4">
                         <div>

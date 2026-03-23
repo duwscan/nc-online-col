@@ -53,6 +53,12 @@ public class EditRoundViewModel : IValidatableObject
     // Selected method IDs
     public List<Guid> SelectedMethodIds { get; set; } = [];
 
+    // Document types available for selection
+    public List<DocumentTypeOption> AvailableDocumentTypes { get; set; } = [];
+
+    // Selected document type IDs
+    public List<Guid> SelectedDocumentTypeIds { get; set; } = [];
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (StartAt >= EndAt)
@@ -75,6 +81,7 @@ public class RoundProgramItemViewModel
     public int? PublishedQuota { get; set; }
     public string Status { get; set; } = "ACTIVE";
     public List<Guid> AssignedMethodIds { get; set; } = [];
+    public List<Guid> AssignedDocumentTypeIds { get; set; } = [];
 }
 
 public class ProgramOptionViewModel

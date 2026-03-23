@@ -64,10 +64,10 @@
                                                         <span>Học phí: @rp.Program.TuitionFee.Value.ToString("N0")đ/năm</span>
                                                     }
                                                 </div>
-                                                @if (rp.RoundAdmissionMethods.Any())
+                                                @if (rp.AdmissionMethods.Any())
                                                 {
                                                     <div class="mt-2 flex flex-wrap gap-2">
-                                                        @foreach (var method in rp.RoundAdmissionMethods)
+                                                        @foreach (var method in rp.AdmissionMethods)
                                                         {
                                                             <span class="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700">@method.Method.MethodName</span>
                                                         }

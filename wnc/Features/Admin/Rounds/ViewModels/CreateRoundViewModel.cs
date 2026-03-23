@@ -41,6 +41,8 @@ public class CreateRoundViewModel : IValidatableObject
 
     public List<AdmissionMethodOption> AvailableMethods { get; set; } = [];
     public List<Guid> SelectedMethodIds { get; set; } = [];
+    public List<DocumentTypeOption> AvailableDocumentTypes { get; set; } = [];
+    public List<Guid> SelectedDocumentTypeIds { get; set; } = [];
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

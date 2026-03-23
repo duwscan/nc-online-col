@@ -71,25 +71,6 @@
                 <textarea asp-for="Notes" rows="4" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
                 <span asp-validation-for="Notes" class="text-sm text-red-600"></span>
             </div>
-
-            <div class="space-y-1 md:col-span-2">
-                <label class="block text-sm font-medium text-slate-700">Phương thức xét tuyển</label>
-                <p class="mb-2 text-xs text-slate-500">Chọn các phương thức xét tuyển áp dụng cho đợt này.</p>
-                <div class="flex flex-wrap gap-2">
-                    @foreach (var method in Model.AvailableMethods)
-                    {
-                        <label class="method-checkbox inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">
-                            <input type="checkbox" name="SelectedMethodIds" value="@method.Id" class="h-4 w-4 rounded border-slate-300 text-blue-600" />
-                            <span>@method.MethodName</span>
-                            <span class="text-xs text-slate-400">(@method.MethodCode)</span>
-                        </label>
-                    }
-                </div>
-                @if (!Model.AvailableMethods.Any())
-                {
-                    <p class="text-sm text-slate-400">Chưa có phương thức xét tuyển nào. Vui lòng tạo phương thức trước.</p>
-                }
-            </div>
         </div>
 
         <div class="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
@@ -101,15 +82,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        document.querySelectorAll('.method-checkbox input').forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                if (this.checked) {
-                    this.closest('.method-checkbox').classList.add('bg-blue-50', 'border-blue-200');
-                } else {
-                    this.closest('.method-checkbox').classList.remove('bg-blue-50', 'border-blue-200');
-                }
-            });
-        });
-    </script>
 }

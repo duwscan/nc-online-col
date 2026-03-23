@@ -232,6 +232,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .WithMany(x => x.RoundPrograms)
                 .HasForeignKey(x => x.MajorId)
                 .OnDelete(DeleteBehavior.Restrict);
+            entity.HasMany(x => x.AdmissionMethods)
+                .WithOne(x => x.RoundProgram)
+                .HasForeignKey(x => x.RoundProgramId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<RoundAdmissionMethod>(entity =>
@@ -240,10 +244,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasKey(x => x.Id);
             entity.Property(x => x.MinimumScore).HasPrecision(5, 2);
             entity.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-            entity.HasOne(x => x.RoundProgram)
-                .WithMany(x => x.RoundAdmissionMethods)
-                .HasForeignKey(x => x.RoundProgramId)
-                .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(x => x.Method)
                 .WithMany(x => x.RoundAdmissionMethods)
                 .HasForeignKey(x => x.MethodId)
@@ -256,6 +256,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasKey(x => x.Id);
             entity.HasIndex(x => x.DocumentCode).IsUnique();
             entity.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasMany(x => x.RoundDocumentRequirements)
+                .WithOne(x => x.DocumentType)
+                .HasForeignKey(x => x.DocumentTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<RoundDocumentRequirement>(entity =>
@@ -265,13 +269,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.HasIndex(x => new { x.RoundProgramId, x.DocumentTypeId }).IsUnique();
             entity.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             entity.HasOne(x => x.RoundProgram)
-                .WithMany(x => x.RoundDocumentRequirements)
+                .WithMany(x => x.DocumentRequirements)
                 .HasForeignKey(x => x.RoundProgramId)
                 .OnDelete(DeleteBehavior.Cascade);
-            entity.HasOne(x => x.DocumentType)
-                .WithMany(x => x.RoundDocumentRequirements)
-                .HasForeignKey(x => x.DocumentTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 
