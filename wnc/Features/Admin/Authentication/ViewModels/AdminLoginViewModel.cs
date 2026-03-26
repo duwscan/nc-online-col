@@ -12,6 +12,9 @@ public class AdminLoginViewModel
     [DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;
 
+    [Display(Name = "Ghi nho dang nhap tren thiet bi nay")]
+    public bool RememberMe { get; set; }
+
     public string? ErrorMessage { get; set; }
 
     public string? ReturnUrl { get; set; }

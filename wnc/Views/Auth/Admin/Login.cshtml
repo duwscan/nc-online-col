@@ -1,6 +1,6 @@
 @model AdminLoginViewModel
 @{
-    ViewData["Title"] = "Đăng nhập Quản trị";
+    ViewData["Title"] = "Dang nhap Quan tri";
 }
 
 <section class="mx-auto max-w-md py-8">
@@ -8,10 +8,10 @@
         <div class="space-y-5">
             <div class="space-y-1">
                 <span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-600">
-                    Truy cập Nội bộ
+                    Truy cap Noi bo
                 </span>
-                <h1 class="text-xl font-semibold text-slate-900">Đăng nhập</h1>
-                <p class="text-sm text-slate-500">Email công tác hoặc số điện thoại đã đăng ký.</p>
+                <h1 class="text-xl font-semibold text-slate-900">Dang nhap</h1>
+                <p class="text-sm text-slate-500">Email cong tac hoac so dien thoai da dang ky.</p>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
@@ -44,13 +44,18 @@
                     <span asp-validation-for="Password" class="text-sm text-red-600"></span>
                 </div>
 
+                <label class="flex items-start gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-600">
+                    <input asp-for="RememberMe" class="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900"/>
+                    <span>Luu dang nhap bang persistent cookie tren may dang dung.</span>
+                </label>
+
                 <button type="submit" class="w-full rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
-                    Đăng nhập
+                    Dang nhap
                 </button>
             </form>
 
             <p class="text-center text-sm text-slate-500">
-                <a href="/" class="hover:text-slate-700">Về trang chủ</a>
+                <a href="/" class="hover:text-slate-700">Ve trang chu</a>
             </p>
         </div>
     </div>

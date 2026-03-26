@@ -1,12 +1,12 @@
 @model StudentLoginViewModel
 @{
-    ViewData["Title"] = "Đăng nhập Thí sinh";
+    ViewData["Title"] = "Dang nhap Thi sinh";
 }
 
 <section class="mx-auto max-w-md pt-12">
     <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <div class="mb-6 text-center">
-            <h1 class="text-2xl font-semibold text-slate-900">Đăng nhập Thí sinh</h1>
+            <h1 class="text-2xl font-semibold text-slate-900">Dang nhap Thi sinh</h1>
         </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
@@ -23,30 +23,36 @@
             <input asp-for="ReturnUrl" type="hidden"/>
 
             <div>
-                <label asp-for="LoginIdentifier" class="block text-sm font-medium text-slate-700 mb-1"></label>
+                <label asp-for="LoginIdentifier" class="mb-1 block text-sm font-medium text-slate-700"></label>
                 <input asp-for="LoginIdentifier"
                        autocomplete="username"
                        class="w-full rounded-xl border border-slate-300 px-4 py-3 text-base text-slate-900"
-                       placeholder="Email hoặc số điện thoại"/>
+                       placeholder="Email hoac so dien thoai"/>
                 <span asp-validation-for="LoginIdentifier" class="text-sm text-rose-600"></span>
             </div>
 
             <div>
-                <label asp-for="Password" class="block text-sm font-medium text-slate-700 mb-1"></label>
+                <label asp-for="Password" class="mb-1 block text-sm font-medium text-slate-700"></label>
                 <input asp-for="Password"
+                       type="password"
                        autocomplete="current-password"
                        class="w-full rounded-xl border border-slate-300 px-4 py-3 text-base text-slate-900"
-                       placeholder="Mật khẩu"/>
+                       placeholder="Mat khau"/>
                 <span asp-validation-for="Password" class="text-sm text-rose-600"></span>
             </div>
 
+            <label class="flex items-start gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-600">
+                <input asp-for="RememberMe" class="mt-1 h-4 w-4 rounded border-slate-300 text-blue-600"/>
+                <span>Luu dang nhap bang persistent cookie tren thiet bi nay.</span>
+            </label>
+
             <button type="submit" class="w-full min-h-11 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                Đăng nhập
+                Dang nhap
             </button>
         </form>
 
         <div class="mt-6 border-t border-slate-200 pt-6 text-center text-sm text-slate-500">
-            <p>Chưa có tài khoản? <a href="/auth/student/signup" class="font-medium text-blue-600 hover:text-blue-700">Đăng ký</a></p>
+            <p>Chua co tai khoan? <a href="/auth/student/signup" class="font-medium text-blue-600 hover:text-blue-700">Dang ky</a></p>
         </div>
     </div>
 </section>

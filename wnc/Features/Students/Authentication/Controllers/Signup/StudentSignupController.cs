@@ -1,18 +1,20 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using wnc.Data;
 using wnc.Features.Students.Authentication.ViewModels;
+using wnc.Infrastructure.Security;
 using wnc.Models;
-using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace wnc.Features.Students.Authentication.Controllers.Signup;
 
 [AllowAnonymous]
-public class StudentSignupController(AppDbContext dbContext) : Controller
+public class StudentSignupController(
+    AppDbContext dbContext,
+    UserManager<AppUser> userManager,
+    SignInManager<AppUser> signInManager,
+    PortalSessionService portalSessionService) : Controller
 {
     [HttpGet("/auth/student/signup")]
     public IActionResult Index(string? returnUrl = null)
@@ -65,9 +67,9 @@ public class StudentSignupController(AppDbContext dbContext) : Controller
         var user = new AppUser
         {
             Id = userId,
+            Username = looksLikeEmail ? identifier : $"student.{userId:N}",
             Email = looksLikeEmail ? identifier : null,
             PhoneNumber = looksLikeEmail ? null : identifier,
-            PasswordHash = BCryptNet.HashPassword(model.Password),
             Status = "ACTIVE",
             CreatedAt = now,
             UpdatedAt = now
@@ -80,24 +82,27 @@ public class StudentSignupController(AppDbContext dbContext) : Controller
             FullName = model.FullName.Trim(),
             DateOfBirth = model.DateOfBirth,
             Gender = model.Gender,
-            Email = looksLikeEmail ? identifier : null,
-            PhoneNumber = looksLikeEmail ? null : identifier,
+            Email = looksLikeEmail ? identifier : string.Empty,
+            PhoneNumber = looksLikeEmail ? string.Empty : identifier,
             CreatedAt = now,
             UpdatedAt = now
         };
 
-        var userRole = new UserRole
+        var createUserResult = await userManager.CreateAsync(user, model.Password);
+        if (!createUserResult.Succeeded)
         {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            RoleId = SeedIds.CandidateRoleId,
-            AssignedAt = now,
-            AssignedBy = null
-        };
+            model.ErrorMessage = string.Join(" ", createUserResult.Errors.Select(x => x.Description));
+            return View("~/Views/Auth/Student/Signup.cshtml", model);
+        }
 
-        dbContext.Users.Add(user);
+        var addRoleResult = await userManager.AddToRoleAsync(user, "CANDIDATE");
+        if (!addRoleResult.Succeeded)
+        {
+            model.ErrorMessage = string.Join(" ", addRoleResult.Errors.Select(x => x.Description));
+            return View("~/Views/Auth/Student/Signup.cshtml", model);
+        }
+
         dbContext.Candidates.Add(candidate);
-        dbContext.UserRoles.Add(userRole);
 
         // Log successful registration
         var userAgent = Request.Headers.UserAgent.ToString();
@@ -116,31 +121,8 @@ public class StudentSignupController(AppDbContext dbContext) : Controller
 
         await dbContext.SaveChangesAsync();
 
-        // Sign in the new user
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, userId.ToString()),
-            new(ClaimTypes.Name, model.FullName),
-            new(ClaimTypes.Role, "CANDIDATE"),
-            new("role", "CANDIDATE")
-        };
-
-        if (!string.IsNullOrWhiteSpace(user.Email))
-        {
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-        }
-
-        var principal = new ClaimsPrincipal(
-            new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            principal,
-            new AuthenticationProperties
-            {
-                IsPersistent = false,
-                AllowRefresh = true
-            });
+        await signInManager.SignInAsync(user, isPersistent: false);
+        portalSessionService.StoreSignIn(HttpContext, user, ["CANDIDATE"], "STUDENT");
 
         return Redirect("/");
     }

@@ -1,17 +1,21 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using wnc.Infrastructure.Security;
+using wnc.Models;
 
 namespace wnc.Features.Students.Authentication.Controllers.Logout;
 
 [Authorize]
-public class StudentLogoutController : Controller
+public class StudentLogoutController(
+    SignInManager<AppUser> signInManager,
+    PortalSessionService portalSessionService) : Controller
 {
     [HttpGet("/auth/student/logout")]
     public async Task<IActionResult> Index()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        portalSessionService.Clear(HttpContext);
+        await signInManager.SignOutAsync();
         return Redirect("/auth/student/login");
     }
 }
