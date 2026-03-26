@@ -216,6 +216,34 @@ public class TrainingProgramController(AppDbContext dbContext) : Controller
         return Redirect("/admin/programs");
     }
 
+    [HttpPost("/admin/programs/delete/{id:guid}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var program = await dbContext.TrainingPrograms
+            .Include(p => p.Majors)
+            .Include(p => p.RoundPrograms)
+            .Include(p => p.ApplicationPreferences)
+            .SingleOrDefaultAsync(p => p.Id == id);
+
+        if (program is null)
+        {
+            return NotFound();
+        }
+
+        if (program.Majors.Count > 0 || program.RoundPrograms.Count > 0 || program.ApplicationPreferences.Count > 0)
+        {
+            TempData["ErrorMessage"] = "Không thể xóa chương trình đào tạo đã có dữ liệu liên quan.";
+            return Redirect("/admin/programs");
+        }
+
+        dbContext.TrainingPrograms.Remove(program);
+        await dbContext.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Đã xóa chương trình đào tạo thành công.";
+        return Redirect("/admin/programs");
+    }
+
     [HttpPost("/admin/programs/toggle-status/{id:guid}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ToggleStatus(Guid id, string? returnUrl = null)

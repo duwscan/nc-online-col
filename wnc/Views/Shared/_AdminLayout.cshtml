@@ -31,13 +31,9 @@
 
         <aside id="admin-sidebar" class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-out lg:sticky lg:top-0 lg:h-screen lg:translate-x-0">
             <div class="flex h-20 items-center justify-between border-b border-slate-200 px-6">
-                <a href="/admin/dashboard" class="flex items-center gap-3 text-slate-900">
-                    <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-600 text-base font-semibold text-white">W</span>
-                    <span>
-                        <span class="block text-xs font-semibold uppercase tracking-[0.24em] text-blue-600">WNC Portal</span>
-                        <span class="block text-lg font-semibold text-slate-900">Bảng điều khiển</span>
-                    </span>
-                </a>
+                <div class="flex items-center gap-3 text-slate-900">
+                    <span class="block text-lg font-semibold text-slate-900">Xin chào, @displayName</span>
+                </div>
                 <button type="button" id="admin-sidebar-close" class="inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 lg:hidden" aria-label="Close navigation">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 18 18 6M6 6l12 12" />
@@ -81,25 +77,8 @@
                             <a href="@methodsLink" class="@(isMethodsPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Phương thức xét tuyển</a>
                             <a href="/admin/programs" class="@(isProgramManagementPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Chương trình đào tạo</a>
                             <a href="/admin/majors" class="@(isMajorManagementPage ? "block rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600" : "block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600")">Ngành học</a>
-                            <a href="#" class="block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600">Thí sinh</a>
-                            <a href="#" class="block rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 hover:text-blue-600">Hồ sơ ứng tuyển</a>
                         </div>
                     </div>
-
-                    <a href="#" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-blue-600">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7.5 17.25v-10.5m4.5 10.5V10.5m4.5 6.75V13.5m-9 6.75h10.5A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25h1.5Z" />
-                        </svg>
-                        Báo cáo
-                    </a>
-
-                    <a href="#" class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-blue-600">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.5 6h3m-7.156 2.629 1.06-1.837a1.125 1.125 0 0 1 1.949 0l1.06 1.837a1.125 1.125 0 0 0 .974.563h2.12a1.125 1.125 0 0 1 .974 1.687l-1.06 1.837a1.125 1.125 0 0 0 0 1.124l1.06 1.837a1.125 1.125 0 0 1-.974 1.687h-2.12a1.125 1.125 0 0 0-.974.563l-1.06 1.837a1.125 1.125 0 0 1-1.949 0l-1.06-1.837a1.125 1.125 0 0 0-.974-.563h-2.12a1.125 1.125 0 0 1-.974-1.687l1.06-1.837a1.125 1.125 0 0 0 0-1.124l-1.06-1.837a1.125 1.125 0 0 1 .974-1.687h2.12a1.125 1.125 0 0 0 .974-.563Z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" />
-                        </svg>
-                        Cài đặt
-                    </a>
                 </div>
             </nav>
 

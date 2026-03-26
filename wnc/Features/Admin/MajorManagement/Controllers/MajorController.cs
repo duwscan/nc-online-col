@@ -213,6 +213,33 @@ public class MajorController(AppDbContext dbContext) : Controller
         return Redirect("/admin/majors");
     }
 
+    [HttpPost("/admin/majors/delete/{id:guid}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var major = await dbContext.Majors
+            .Include(m => m.RoundPrograms)
+            .Include(m => m.ApplicationPreferences)
+            .SingleOrDefaultAsync(m => m.Id == id);
+
+        if (major is null)
+        {
+            return NotFound();
+        }
+
+        if (major.RoundPrograms.Count > 0 || major.ApplicationPreferences.Count > 0)
+        {
+            TempData["ErrorMessage"] = "Không thể xóa ngành đào tạo đã có dữ liệu liên quan.";
+            return Redirect("/admin/majors");
+        }
+
+        dbContext.Majors.Remove(major);
+        await dbContext.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Đã xóa ngành đào tạo thành công.";
+        return Redirect("/admin/majors");
+    }
+
     private async Task ValidateFormAsync(MajorFormViewModel model, Guid? currentId)
     {
         if (!Statuses.Contains(model.Status, StringComparer.OrdinalIgnoreCase))
