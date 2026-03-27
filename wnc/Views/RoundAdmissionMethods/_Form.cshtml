@@ -1,0 +1,45 @@
+@model RoundAdmissionMethodFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="RoundProgramId" class="form-label"></label>
+        <select asp-for="RoundProgramId" asp-items="Model.RoundProgramOptions" class="form-select">
+            <option value="">Select round program</option>
+        </select>
+        <span asp-validation-for="RoundProgramId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="MethodId" class="form-label"></label>
+        <select asp-for="MethodId" asp-items="Model.MethodOptions" class="form-select">
+            <option value="">Select method</option>
+        </select>
+        <span asp-validation-for="MethodId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="CombinationCode" class="form-label"></label>
+        <input asp-for="CombinationCode" class="form-control" />
+        <span asp-validation-for="CombinationCode" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="MinimumScore" class="form-label"></label>
+        <input asp-for="MinimumScore" class="form-control" />
+        <span asp-validation-for="MinimumScore" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label"></label>
+        <input asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="PriorityPolicy" class="form-label"></label>
+        <textarea asp-for="PriorityPolicy" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="PriorityPolicy" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="CalculationRule" class="form-label"></label>
+        <textarea asp-for="CalculationRule" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="CalculationRule" class="text-danger"></span>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+@model TrainingProgramFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="ProgramCode" class="form-label"></label>
+        <input asp-for="ProgramCode" class="form-control" />
+        <span asp-validation-for="ProgramCode" class="text-danger"></span>
+    </div>
+    <div class="col-md-8">
+        <label asp-for="ProgramName" class="form-label"></label>
+        <input asp-for="ProgramName" class="form-control" />
+        <span asp-validation-for="ProgramName" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="EducationType" class="form-label"></label>
+        <input asp-for="EducationType" class="form-control" />
+        <span asp-validation-for="EducationType" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Quota" class="form-label"></label>
+        <input asp-for="Quota" class="form-control" />
+        <span asp-validation-for="Quota" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DisplayOrder" class="form-label"></label>
+        <input asp-for="DisplayOrder" class="form-control" />
+        <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="TuitionFee" class="form-label"></label>
+        <input asp-for="TuitionFee" class="form-control" />
+        <span asp-validation-for="TuitionFee" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DurationText" class="form-label"></label>
+        <input asp-for="DurationText" class="form-control" />
+        <span asp-validation-for="DurationText" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label"></label>
+        <input asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="ManagingUnit" class="form-label"></label>
+        <input asp-for="ManagingUnit" class="form-control" />
+        <span asp-validation-for="ManagingUnit" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+</div>
