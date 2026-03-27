@@ -1,0 +1,31 @@
+@model wnc.Features.IdentityAccess.UserRoles.UserRoleFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="UserId" class="form-label"></label>
+        <select asp-for="UserId" asp-items="Model.UserOptions" class="form-select"></select>
+        <span asp-validation-for="UserId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="RoleId" class="form-label"></label>
+        <select asp-for="RoleId" asp-items="Model.RoleOptions" class="form-select"></select>
+        <span asp-validation-for="RoleId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="AssignedBy" class="form-label"></label>
+        <select asp-for="AssignedBy" asp-items="Model.AssignedByOptions" class="form-select"></select>
+        <span asp-validation-for="AssignedBy" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="AssignedAt" class="form-label"></label>
+        <input asp-for="AssignedAt" class="form-control" type="datetime-local" />
+        <span asp-validation-for="AssignedAt" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="RevokedAt" class="form-label"></label>
+        <input asp-for="RevokedAt" class="form-control" type="datetime-local" />
+        <span asp-validation-for="RevokedAt" class="text-danger"></span>
+    </div>
+</div>

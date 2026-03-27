@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using wnc.Data;
+using wnc.Features.IdentityAccess.AuthLogs;
+using wnc.Features.IdentityAccess.Common;
+using wnc.Features.IdentityAccess.Roles;
+using wnc.Features.IdentityAccess.UserRoles;
+using wnc.Features.IdentityAccess.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IListQueryService<UsersListQuery, UserListItemViewModel>, UsersListQueryService>();
+builder.Services.AddScoped<IListQueryService<RolesListQuery, RoleListItemViewModel>, RolesListQueryService>();
+builder.Services.AddScoped<IListQueryService<UserRolesListQuery, UserRoleListItemViewModel>, UserRolesListQueryService>();
+builder.Services.AddScoped<IListQueryService<AuthLogsListQuery, AuthLogListItemViewModel>, AuthLogsListQueryService>();
 
 var app = builder.Build();
 

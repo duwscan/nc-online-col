@@ -1,0 +1,27 @@
+@model wnc.Features.IdentityAccess.Roles.RoleFormViewModel
+
+@{
+    ViewData["Title"] = "Create Role";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Create role</h1>
+        <p class="text-muted mb-0">Define a reusable access role.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to list</a>
+</div>
+
+<form asp-action="Create" method="post" class="card shadow-sm">
+    <div class="card-body">
+        <partial name="_Form" model="Model" />
+    </div>
+    <div class="card-footer d-flex justify-content-end gap-2">
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
