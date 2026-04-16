@@ -1,10 +1,37 @@
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@using wnc.Data
 @model RoundProgram
+@inject AppDbContext DbContext
 @{
     ViewData["Title"] = Model.Program.ProgramName;
     Layout = "~/Views/Shared/_StudentLayout.cshtml";
 
-    var isActive = Model.Round.StartAt <= DateTime.UtcNow && Model.Round.EndAt >= DateTime.UtcNow;
-    var isUpcoming = Model.Round.StartAt > DateTime.UtcNow;
+    var utcNow = DateTime.UtcNow;
+    var isEligible = Model.Round.Status == "PUBLISHED"
+        && Model.Status == "ACTIVE"
+        && Model.Round.StartAt <= utcNow
+        && Model.Round.EndAt >= utcNow;
+    var isUpcoming = Model.Round.StartAt > utcNow;
+
+    Guid? currentCandidateId = null;
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (Guid.TryParse(currentUserId, out var parsedUserId))
+    {
+        currentCandidateId = await DbContext.Candidates
+            .AsNoTracking()
+            .Where(candidate => candidate.UserId == parsedUserId)
+            .Select(candidate => (Guid?)candidate.Id)
+            .FirstOrDefaultAsync();
+    }
+
+    var existingApplicationId = currentCandidateId.HasValue
+        ? await DbContext.AdmissionApplications
+            .AsNoTracking()
+            .Where(application => application.CandidateId == currentCandidateId.Value && application.RoundProgramId == Model.Id)
+            .Select(application => (Guid?)application.Id)
+            .FirstOrDefaultAsync()
+        : null;
 }
 
 <div class="space-y-6">
@@ -19,7 +46,7 @@
                 <p class="mt-2 text-sm text-slate-500">@Model.Round.RoundName · @Model.Round.RoundCode</p>
             </div>
             <div class="flex items-center gap-2">
-                @if (isActive)
+                @if (isEligible)
                 {
                     <span class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">Đang mở</span>
                 }
@@ -120,11 +147,23 @@
         <a href="/student/rounds" class="text-sm font-medium text-slate-600 hover:text-slate-900">
             ← Quay lại danh sách
         </a>
-        @if (isActive)
+        @if (existingApplicationId.HasValue)
         {
-            <button class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+            <a
+                href="/student/applications/@existingApplicationId"
+                data-testid="view-application-status-link"
+                class="rounded-xl border border-blue-200 bg-blue-50 px-6 py-3 text-sm font-semibold text-blue-700 hover:border-blue-300 hover:bg-blue-100">
+                Xem trạng thái hồ sơ
+            </a>
+        }
+        else if (isEligible)
+        {
+            <a
+                href="/student/applications/new/@Model.Id"
+                data-testid="wizard-entry-link"
+                class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">
                 Đăng ký ngay
-            </button>
+            </a>
         }
     </div>
 </div>

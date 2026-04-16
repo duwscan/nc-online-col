@@ -1,0 +1,90 @@
+@model wnc.Features.Students.Applications.ViewModels.StudentApplicationsIndexViewModel
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = Model.PageTitle;
+}
+
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+        <div class="mb-6">
+            <h1 class="text-2xl font-semibold text-slate-900">@Model.PageTitle</h1>
+            <p class="mt-1 text-sm text-slate-500">Danh sách đơn đăng ký của bạn</p>
+        </div>
+
+        @if (Model.Applications.Count == 0)
+        {
+            <div class="rounded-2xl border border-slate-200 bg-white p-12 text-center" data-testid="applications-list">
+                <p class="text-slate-500">Bạn chưa có đơn đăng ký nào.</p>
+            </div>
+        }
+        else
+        {
+            <div class="space-y-4" data-testid="applications-list">
+                @foreach (var application in Model.Applications)
+                {
+                    var statusClass = application.CurrentStatus switch
+                    {
+                        "DRAFT" => "bg-slate-100 text-slate-600",
+                        "SUBMITTED" => "bg-green-100 text-green-700",
+                        "UNDER_REVIEW" => "bg-blue-100 text-blue-700",
+                        "APPROVED" => "bg-green-100 text-green-700",
+                        "REJECTED" => "bg-red-100 text-red-700",
+                        "CANCELLED" => "bg-slate-100 text-slate-500",
+                        _ => "bg-slate-100 text-slate-600"
+                    };
+
+                    var statusLabel = application.CurrentStatus switch
+                    {
+                        "DRAFT" => "Bản nháp",
+                        "SUBMITTED" => "Đã nộp",
+                        "UNDER_REVIEW" => "Đang xét tuyển",
+                        "APPROVED" => "Trúng tuyển",
+                        "REJECTED" => "Từ chối",
+                        "CANCELLED" => "Đã hủy",
+                        _ => application.CurrentStatus
+                    };
+
+                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                         data-testid="application-card-@application.Id">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                            <div class="min-w-0">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h2 class="text-lg font-semibold text-slate-900 truncate">@application.ApplicationCode</h2>
+                                    <span class="rounded-full px-2.5 py-0.5 text-xs font-medium @statusClass">@statusLabel</span>
+                                </div>
+                                <p class="mt-1 text-sm text-slate-600">@application.RoundName</p>
+                            </div>
+                            <a href="/student/applications/@application.Id"
+                               class="shrink-0 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700
+                                      hover:bg-slate-50 hover:border-slate-400 transition-colors text-center">
+                                Xem chi tiết
+                            </a>
+                        </div>
+
+                        <div class="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600">
+                            <div>
+                                <span class="font-medium">Ngành/Chương trình:</span>
+                                <span>@application.ProgramName</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(application.MajorName))
+                            {
+                                <div>
+                                    <span class="font-medium">Chuyên ngành:</span>
+                                    <span>@application.MajorName</span>
+                                </div>
+                            }
+                            <div>
+                                <span class="font-medium">@(application.IsDraft ? "Tạo lúc:" : "Nộp lúc:")</span>
+                                <span>
+                                    @(application.IsDraft
+                                        ? application.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                        : application.SubmittedAt!.Value.ToString("dd/MM/yyyy HH:mm"))
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

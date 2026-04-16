@@ -1,0 +1,171 @@
+@model wnc.Features.Students.Applications.ViewModels.StudentApplicationDetailViewModel
+@{
+    Layout = "~/Views/Shared/_StudentLayout.cshtml";
+    ViewData["Title"] = Model.PageTitle;
+}
+
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-slate-900">@Model.PageTitle</h1>
+            <a href="/student/applications"
+               class="text-sm font-medium text-slate-600 hover:text-slate-900">
+                ← Danh sách đơn
+            </a>
+        </div>
+
+        @if (Model.ShowDuplicateBanner)
+        {
+            <div data-testid="application-info-banner"
+                 class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
+                <p class="text-sm font-medium">
+                    Bạn đã có đơn đăng ký cho chương trình này rồi.
+                </p>
+            </div>
+        }
+
+        @if (Model.IsDraft && !string.IsNullOrEmpty(Model.ContinueSubmitLink))
+        {
+            <div class="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-800">
+                <p class="text-sm font-medium mb-2">Đơn của bạn chưa được nộp.</p>
+                <a href="@Model.ContinueSubmitLink"
+                   class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                    Tiếp tục nộp đơn →
+                </a>
+            </div>
+        }
+
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm mb-6">
+            <div class="flex items-start justify-between gap-4 mb-4">
+                <div>
+                    <p class="text-sm text-slate-500">Mã đơn</p>
+                    <p class="text-lg font-semibold text-slate-900">@Model.ApplicationCode</p>
+                </div>
+                <span data-testid="application-status-badge"
+                      class="rounded-full px-3 py-1 text-sm font-semibold
+                             @(Model.CurrentStatus switch {
+                                 "DRAFT" => "bg-slate-100 text-slate-600",
+                                 "SUBMITTED" => "bg-green-100 text-green-700",
+                                 "UNDER_REVIEW" => "bg-blue-100 text-blue-700",
+                                 "APPROVED" => "bg-green-100 text-green-700",
+                                 "REJECTED" => "bg-red-100 text-red-700",
+                                 "CANCELLED" => "bg-slate-100 text-slate-500",
+                                 _ => "bg-slate-100 text-slate-600"
+                             })">
+                    @(Model.CurrentStatus switch {
+                        "DRAFT" => "Bản nháp",
+                        "SUBMITTED" => "Đã nộp",
+                        "UNDER_REVIEW" => "Đang xét tuyển",
+                        "APPROVED" => "Trúng tuyển",
+                        "REJECTED" => "Từ chối",
+                        "CANCELLED" => "Đã hủy",
+                        _ => Model.CurrentStatus
+                    })
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div>
+                    <p class="text-sm text-slate-500">Đợt tuyển sinh</p>
+                    <p class="text-base font-medium text-slate-900">@Model.RoundName</p>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500">Chương trình</p>
+                    <p class="text-base font-medium text-slate-900">@Model.ProgramName</p>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.MajorName))
+                {
+                    <div>
+                        <p class="text-sm text-slate-500">Ngành</p>
+                        <p class="text-base font-medium text-slate-900">@Model.MajorName</p>
+                    </div>
+                }
+                <div>
+                    <p class="text-sm text-slate-500">@(Model.IsDraft ? "Ngày tạo" : "Ngày nộp")</p>
+                    <p class="text-base font-medium text-slate-900">
+                        @(Model.IsDraft ? Model.CreatedAt.ToString("dd/MM/yyyy HH:mm") :
+                          Model.SubmittedAt?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                    </p>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.RejectionReason))
+                {
+                    <div class="sm:col-span-2">
+                        <p class="text-sm text-slate-500">Lý do từ chối</p>
+                        <p class="text-base font-medium text-red-700">@Model.RejectionReason</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (Model.Documents.Count > 0)
+        {
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold text-slate-900 mb-3">Hồ sơ đã tải lên</h2>
+                <ul data-testid="document-list" class="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
+                    @foreach (var doc in Model.Documents)
+                    {
+                        <li class="flex items-center justify-between px-4 py-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <svg class="h-5 w-5 shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
+                                </svg>
+                                <div class="min-w-0">
+                                    <a href="/@doc.StoragePath"
+                                       target="_blank"
+                                       class="text-sm font-medium text-slate-900 hover:text-indigo-600 truncate block max-w-xs">
+                                        @doc.FileName
+                                    </a>
+                                    <div class="text-xs text-slate-400">
+                                        @doc.DocumentTypeName · @(doc.FileSize / 1024) KB · @doc.UploadedAt
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0 ml-4
+                                @(doc.ValidationStatus == "VALID" ? "bg-green-100 text-green-700" :
+                                  doc.ValidationStatus == "REJECTED" ? "bg-red-100 text-red-700" :
+                                  "bg-amber-100 text-amber-700")">
+                                @(doc.ValidationStatus == "PENDING" ? "Đang chờ" :
+                                  doc.ValidationStatus == "VALID" ? "Hợp lệ" :
+                                  doc.ValidationStatus == "REJECTED" ? "Từ chối" : doc.ValidationStatus)
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+        @if (Model.Timeline.Count > 0)
+        {
+            <div>
+                <h2 class="text-lg font-semibold text-slate-900 mb-3">Lịch sử trạng thái</h2>
+                <ol data-testid="application-timeline"
+                    class="relative border-l-2 border-slate-200 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+                    @foreach (var entry in Model.Timeline)
+                    {
+                        <li class="relative pl-8">
+                            <div class="absolute -left-[9px] top-1 h-4 w-4 rounded-full border-2 border-white bg-slate-400"></div>
+                            <div class="flex items-start gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-slate-900">
+                                        @(string.IsNullOrEmpty(entry.FromStatus)
+                                            ? entry.ToStatus
+                                            : $"{entry.FromStatus} → {entry.ToStatus}")
+                                    </p>
+                                    @if (!string.IsNullOrEmpty(entry.Reason))
+                                    {
+                                        <p class="text-sm text-slate-600 mt-0.5">@entry.Reason</p>
+                                    }
+                                    @if (!string.IsNullOrEmpty(entry.PublicNote))
+                                    {
+                                        <p class="text-sm text-slate-500 mt-1 italic">@entry.PublicNote</p>
+                                    }
+                                </div>
+                                <span class="text-xs text-slate-400 shrink-0">@entry.ChangedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                        </li>
+                    }
+                </ol>
+            </div>
+        }
+    </div>
+</div>
