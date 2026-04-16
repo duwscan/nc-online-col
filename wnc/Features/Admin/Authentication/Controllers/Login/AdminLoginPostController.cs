@@ -1,17 +1,19 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using wnc.Data;
 using wnc.Features.Admin.Authentication.ViewModels;
+using wnc.Infrastructure.Security;
 using wnc.Models;
 
 namespace wnc.Features.Admin.Authentication.Controllers.Login;
 
 [AllowAnonymous]
-public class AdminLoginPostController(AppDbContext dbContext) : Controller
+public class AdminLoginPostController(
+    AppDbContext dbContext,
+    SignInManager<AppUser> signInManager,
+    PortalSessionService portalSessionService) : Controller
 {
     [HttpPost("/auth/admin/login")]
     [ValidateAntiForgeryToken]
@@ -63,7 +65,8 @@ public class AdminLoginPostController(AppDbContext dbContext) : Controller
             return View("~/Views/Auth/Admin/Login.cshtml", model);
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
+        var passwordCheck = await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+        if (!passwordCheck.Succeeded)
         {
             await LogAttemptAsync(user.Id, loginIdentifier, "FAILED", "INVALID_CREDENTIALS");
             model.Password = string.Empty;
@@ -97,34 +100,12 @@ public class AdminLoginPostController(AppDbContext dbContext) : Controller
         user.LastLoginAt = DateTime.UtcNow;
         user.UpdatedAt = DateTime.UtcNow;
 
-        var claims = new List<Claim>
+        await signInManager.SignInAsync(user, new Microsoft.AspNetCore.Authentication.AuthenticationProperties
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.Username ?? user.Email ?? user.PhoneNumber ?? user.Id.ToString())
-        };
-
-        if (!string.IsNullOrWhiteSpace(user.Email))
-        {
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
-        }
-
-        foreach (var roleCode in activeRoleCodes)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, roleCode));
-            claims.Add(new Claim("role", roleCode));
-        }
-
-        var principal = new ClaimsPrincipal(
-            new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            principal,
-            new AuthenticationProperties
-            {
-                IsPersistent = false,
-                AllowRefresh = true
-            });
+            IsPersistent = model.RememberMe,
+            AllowRefresh = true
+        });
+        portalSessionService.StoreSignIn(HttpContext, user, activeRoleCodes, "ADMIN");
 
         dbContext.AuthLogs.Add(CreateAuthLog(user.Id, loginIdentifier, "SUCCESS", null));
         await dbContext.SaveChangesAsync();

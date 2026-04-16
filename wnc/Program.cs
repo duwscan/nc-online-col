@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using System.Globalization;
 using wnc.Data;
+using wnc.Infrastructure.Identity;
+using wnc.Infrastructure.Security;
+using wnc.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,9 +24,38 @@ builder.Services.AddControllersWithViews()
     .AddDataAnnotationsLocalization();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserStore<AppUser>, AppUserStore>();
+builder.Services.AddScoped<IRoleStore<Role>, AppRoleStore>();
+builder.Services.AddScoped<IPasswordHasher<AppUser>, BcryptPasswordHasher>();
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, AppUserClaimsPrincipalFactory>();
+builder.Services.AddScoped<PortalSessionService>();
+builder.Services.AddSingleton<PersistentUserStateCookieService>();
+builder.Services.AddIdentityCore<AppUser>(options =>
+    {
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 8;
+        options.User.RequireUniqueEmail = false;
+        options.SignIn.RequireConfirmedAccount = false;
+    })
+    .AddRoles<Role>()
+    .AddSignInManager<SignInManager<AppUser>>()
+    .AddRoleManager<RoleManager<Role>>();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = PortalSessionService.SessionCookieName;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+});
 builder.Services
-    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+    .AddAuthentication(IdentityConstants.ApplicationScheme)
+    .AddCookie(IdentityConstants.ApplicationScheme, options =>
     {
         options.Cookie.Name = "wnc.auth";
         options.LoginPath = "/auth/student/login";
@@ -83,6 +116,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRequestLocalization(requestLocalizationOptions);
 app.UseRouting();
+app.UseSession();
+app.UseMiddleware<UserStateTrackingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -12,8 +12,8 @@ using wnc.Data;
 namespace wnc.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260322175856_RefactorRoundProgramCollections")]
-    partial class RefactorRoundProgramCollections
+    [Migration("20260325111022_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
