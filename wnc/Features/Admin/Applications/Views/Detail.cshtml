@@ -1,0 +1,237 @@
+@model wnc.Features.Admin.Applications.ViewModels.AdminApplicationDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiet ho so";
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+{
+    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+        @Model.SuccessMessage
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+        @Model.ErrorMessage
+    </div>
+}
+
+<section class="space-y-6">
+    <div class="flex items-center justify-between gap-4">
+        <div>
+            <a href="/admin/applications" class="text-sm font-medium text-slate-500 transition hover:text-slate-900">&larr; Quay lai danh sach ho so</a>
+            <h3 class="mt-2 text-2xl font-semibold text-slate-900">@Model.ApplicationCode</h3>
+        </div>
+        <span class="rounded-full px-3 py-1 text-sm font-semibold @(Model.CurrentStatus switch
+                                                                          {
+                                                                              "DRAFT" => "bg-slate-100 text-slate-700",
+                                                                              "SUBMITTED" => "bg-emerald-50 text-emerald-700",
+                                                                              "UNDER_REVIEW" => "bg-blue-50 text-blue-700",
+                                                                              "APPROVED" => "bg-green-50 text-green-700",
+                                                                              "REJECTED" => "bg-rose-50 text-rose-700",
+                                                                              "CANCELLED" => "bg-slate-200 text-slate-600",
+                                                                              _ => "bg-slate-100 text-slate-700"
+                                                                          })">
+            @Model.CurrentStatus
+        </span>
+    </div>
+
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(340px,1fr)]">
+        <article class="space-y-6">
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                <h4 class="text-lg font-semibold text-slate-900">Thong tin ho so</h4>
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <p class="text-sm text-slate-500">Thi sinh</p>
+                        <p class="mt-1 font-medium text-slate-900">@Model.CandidateName</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Email</p>
+                        <p class="mt-1 font-medium text-slate-900">@Model.CandidateEmail</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">So dien thoai</p>
+                        <p class="mt-1 font-medium text-slate-900">@Model.CandidatePhoneNumber</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Dot xet tuyen</p>
+                        <p class="mt-1 font-medium text-slate-900">@Model.RoundName</p>
+                        <p class="text-xs text-slate-500">@Model.RoundCode</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Chuong trinh</p>
+                        <p class="mt-1 font-medium text-slate-900">@Model.ProgramName</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Nganh</p>
+                        <p class="mt-1 font-medium text-slate-900">@(string.IsNullOrWhiteSpace(Model.MajorName) ? "Khong phan nganh" : Model.MajorName)</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Ngay tao</p>
+                        <p class="mt-1 font-medium text-slate-900">@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Ngay nop</p>
+                        <p class="mt-1 font-medium text-slate-900">@(Model.SubmittedAt.HasValue ? Model.SubmittedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "Chua nop")</p>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <p class="text-sm text-slate-500">Dia chi</p>
+                        <p class="mt-1 font-medium text-slate-900">@(string.IsNullOrWhiteSpace(Model.CandidateAddress) ? "Chua cap nhat" : Model.CandidateAddress)</p>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.RejectionReason))
+                    {
+                        <div class="sm:col-span-2 rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                            <p class="text-sm font-medium text-rose-700">Ly do tu choi hien tai</p>
+                            <p class="mt-1 text-sm text-rose-900">@Model.RejectionReason</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                <h4 class="text-lg font-semibold text-slate-900">Tai lieu da nop</h4>
+                <div class="mt-4 space-y-3">
+                    @if (Model.Documents.Count == 0)
+                    {
+                        <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                            Ho so nay chua co tai lieu nao duoc tai len.
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var document in Model.Documents)
+                        {
+                            <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 p-4 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <p class="font-medium text-slate-900">@document.DocumentTypeName</p>
+                                    <a href="/@document.StoragePath" target="_blank" class="mt-1 inline-block text-sm text-blue-600 transition hover:text-blue-700">@document.FileName</a>
+                                    <p class="mt-1 text-xs text-slate-500">@((document.FileSize / 1024.0).ToString("0")) KB · @document.UploadedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
+                                </div>
+                                <span class="rounded-full px-2.5 py-1 text-xs font-semibold @(document.ValidationStatus switch
+                                                                                              {
+                                                                                                  "VALID" => "bg-green-50 text-green-700",
+                                                                                                  "REJECTED" => "bg-rose-50 text-rose-700",
+                                                                                                  _ => "bg-amber-50 text-amber-700"
+                                                                                              })">
+                                    @document.ValidationStatus
+                                </span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                <h4 class="text-lg font-semibold text-slate-900">Lich su trang thai</h4>
+                <div class="mt-4 space-y-4">
+                    @if (Model.Timeline.Count == 0)
+                    {
+                        <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                            Chua co lich su thay doi trang thai.
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var entry in Model.Timeline)
+                        {
+                            <div class="rounded-2xl border border-slate-200 p-4">
+                                <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                                    <div>
+                                        <p class="font-medium text-slate-900">
+                                            @(string.IsNullOrWhiteSpace(entry.FromStatus) ? entry.ToStatus : $"{entry.FromStatus} -> {entry.ToStatus}")
+                                        </p>
+                                        @if (!string.IsNullOrWhiteSpace(entry.ChangedByName))
+                                        {
+                                            <p class="mt-1 text-xs text-slate-500">Cap nhat boi @entry.ChangedByName</p>
+                                        }
+                                    </div>
+                                    <span class="text-xs text-slate-400">@entry.ChangedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(entry.Reason))
+                                {
+                                    <div class="mt-3 rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                                        <span class="font-medium">Ly do:</span> @entry.Reason
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(entry.PublicNote))
+                                {
+                                    <div class="mt-3 rounded-2xl border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800">
+                                        <span class="font-medium">Ghi chu gui thi sinh:</span> @entry.PublicNote
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(entry.InternalNote))
+                                {
+                                    <div class="mt-3 rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                                        <span class="font-medium">Ghi chu noi bo:</span> @entry.InternalNote
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </article>
+
+        <aside class="space-y-6">
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                <h4 class="text-lg font-semibold text-slate-900">Doi trang thai</h4>
+                @if (Model.StatusUpdate.AvailableStatuses.Count == 0)
+                {
+                    <div class="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                        Trang thai hien tai khong co luong chuyen tiep nao duoc cau hinh.
+                    </div>
+                }
+                else
+                {
+                    <form action="/admin/applications/@Model.ApplicationId/status" method="post" class="mt-4 space-y-4">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ApplicationId" value="@Model.StatusUpdate.ApplicationId" />
+                        <input type="hidden" name="CurrentStatus" value="@Model.StatusUpdate.CurrentStatus" />
+
+                        <div class="space-y-1">
+                            <label for="NewStatus" class="block text-sm font-medium text-slate-700">Trang thai moi</label>
+                            <select id="NewStatus" name="NewStatus" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
+                                @foreach (var status in Model.StatusUpdate.AvailableStatuses)
+                                {
+                                    <option value="@status">@status</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="Reason" class="block text-sm font-medium text-slate-700">Ly do</label>
+                            <textarea id="Reason" name="Reason" rows="3" placeholder="Bat buoc khi tu choi ho so." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="PublicNote" class="block text-sm font-medium text-slate-700">Ghi chu gui thi sinh</label>
+                            <textarea id="PublicNote" name="PublicNote" rows="4" placeholder="Noi dung nay se xuat hien trong lich su trang thai cua thi sinh." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label for="InternalNote" class="block text-sm font-medium text-slate-700">Ghi chu noi bo</label>
+                            <textarea id="InternalNote" name="InternalNote" rows="4" placeholder="Chi hien thi trong man quan tri." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                        </div>
+
+                        <button type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                            Cap nhat trang thai
+                        </button>
+                    </form>
+                }
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                <h4 class="text-lg font-semibold text-slate-900">Luu y van hanh</h4>
+                <ul class="mt-4 space-y-3 text-sm text-slate-600">
+                    <li>Chi nen chuyen sang <code>APPROVED</code> sau khi da hoan tat ra soat ho so.</li>
+                    <li>Trang thai <code>REJECTED</code> yeu cau ghi ro ly do de thi sinh tra cuu.</li>
+                    <li>Ghi chu noi bo phu hop cho quyet dinh nghiep vu, khong hien thi cho thi sinh.</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</section>
