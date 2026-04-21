@@ -26,6 +26,7 @@ public class StudentRoundsController(AppDbContext dbContext) : Controller
                 .ThenInclude(rp => rp.Major)
             .Include(r => r.RoundPrograms)
                 .ThenInclude(rp => rp.AdmissionMethods)
+                    .ThenInclude(ram => ram.Method)
             .Where(r => r.Status == "PUBLISHED")
             .OrderBy(r => r.StartAt)
             .AsNoTracking()

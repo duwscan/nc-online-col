@@ -36,6 +36,8 @@ public class StudentSignupController(AppDbContext dbContext) : Controller
 
         var identifier = model.LoginIdentifier.Trim();
         var looksLikeEmail = identifier.Contains('@');
+        var email = looksLikeEmail ? identifier : string.Empty;
+        var phoneNumber = looksLikeEmail ? string.Empty : identifier;
 
         // Check if user already exists
         var existingUser = await dbContext.Users
@@ -80,8 +82,8 @@ public class StudentSignupController(AppDbContext dbContext) : Controller
             FullName = model.FullName.Trim(),
             DateOfBirth = model.DateOfBirth,
             Gender = model.Gender,
-            Email = looksLikeEmail ? identifier : null,
-            PhoneNumber = looksLikeEmail ? null : identifier,
+            Email = email,
+            PhoneNumber = phoneNumber,
             CreatedAt = now,
             UpdatedAt = now
         };
