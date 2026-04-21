@@ -1,4 +1,4 @@
-﻿@{
+@{
     var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
     var isAdminPortalUser = User.IsInRole("ADMIN")
                             || User.IsInRole("ADMISSION_OFFICER")
@@ -22,7 +22,7 @@
 <!-- Header -->
 <header class="bg-blue-600 text-white">
     <nav class="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
-        <a href="/" class="text-lg font-semibold">Trường Cao đẳng Công nghệ</a>
+        <a href="/" class="text-lg font-semibold">Trường Đại học Công nghệ</a>
         <div class="flex items-center gap-6">
             <a href="/" class="text-sm font-medium hover:text-blue-200">Trang chủ</a>
             @if (isAuthenticated)

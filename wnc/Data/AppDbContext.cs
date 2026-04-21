@@ -568,7 +568,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.DefaultProgramId,
                 ProgramCode = "CD_CHINH_QUY",
-                ProgramName = "Cao dang chinh quy",
+                ProgramName = "Đại học chính quy",
                 EducationType = "CAO_DANG",
                 Description = "Default seeded training program",
                 TuitionFee = 12000000m,

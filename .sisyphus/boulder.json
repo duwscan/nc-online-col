@@ -1,0 +1,91 @@
+{
+  "active_plan": "/Users/duwscan/RiderProjects/wnc/.sisyphus/plans/student-panel-submission-status.md",
+  "started_at": "2026-03-26T18:09:49.597Z",
+  "session_ids": [
+    "ses_2d4fde855ffeDFJJyDzUL4IdPH",
+    "ses_2d4a9090fffewV9fodescxtj52",
+    "ses_2d4a90948ffeK7AMQYdYVTfVAA",
+    "ses_2d4a67657ffeRMnYL1bGZJUcoD",
+    "ses_2d49c1432ffeQXZCjEOExt4gM4",
+    "ses_2d2c616f6ffeIyPslhfg4n5yBl",
+    "ses_2d2b6e643ffe229Pvw1qhZ2nwu",
+    "ses_2d2b0debdffePlb98HHjECZhQG",
+    "ses_2d2ac2263ffe39CIbdJFzEGQZf",
+    "ses_2d26fdf35ffeg2ncf8s5H3zCXm",
+    "ses_2d26fde8fffe3XVuFBu5ltQ1GM",
+    "ses_2d26eeb25ffe3V6bvf3enzQqtc",
+    "ses_2cffbd88dffe6pU0OleAsU7cgQ",
+    "ses_2cffbd916ffefR1a4SYdzYVnTs",
+    "ses_2cffbd80dffe9Dg3Xd3sRuHOmY",
+    "ses_2cffbd99cffeoVTrqD5DQxPAk5",
+    "ses_2cff91d02ffeitW1SzDd2nk1e8",
+    "ses_2cff2a634ffe7LUqiGV4eM5533"
+  ],
+  "plan_name": "student-panel-submission-status",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Scaffold the student applications feature slice and route contracts",
+      "session_id": "ses_2d4a67657ffeRMnYL1bGZJUcoD",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-03-26T18:15:39.124Z"
+    },
+    "todo:2": {
+      "task_key": "todo:2",
+      "task_label": "2",
+      "task_title": "Implement candidate resolution and ownership-scoped application queries",
+      "session_id": "ses_2d49c1432ffeQXZCjEOExt4gM4",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-03-26T18:26:28.886Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "Configure static file serving for uploaded documents",
+      "session_id": "ses_2d2b6e643ffe229Pvw1qhZ2nwu",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-03-27T03:18:11.168Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "Build the document upload wizard page (wizard Step 2)",
+      "session_id": "ses_2d2ac2263ffe39CIbdJFzEGQZf",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-03-27T03:30:34.953Z"
+    },
+    "todo:5": {
+      "task_key": "todo:5",
+      "task_label": "5",
+      "task_title": "Build the student applications list page",
+      "session_id": "ses_2d26eeb25ffe3V6bvf3enzQqtc",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-03-27T04:34:58.455Z"
+    },
+    "todo:6": {
+      "task_key": "todo:6",
+      "task_label": "6",
+      "task_title": "Build the read-only application detail page with full status timeline, uploaded documents list, and guard messaging",
+      "session_id": "ses_2d2680cefffepOWHFaaAaiMkAj",
+      "agent": "Sisyphus-Junior",
+      "category": "visual-engineering",
+      "updated_at": "2026-03-27T05:17:11.293Z"
+    },
+    "final-wave:f1": {
+      "task_key": "final-wave:f1",
+      "task_label": "F1",
+      "task_title": "Plan Compliance Audit — oracle",
+      "session_id": "ses_2cff2a634ffe7LUqiGV4eM5533",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-03-27T16:09:00.022Z"
+    }
+  }
+}

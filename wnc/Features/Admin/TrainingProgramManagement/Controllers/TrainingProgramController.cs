@@ -12,7 +12,7 @@ public class TrainingProgramController(AppDbContext dbContext) : Controller
 {
     private static readonly TrainingProgramFilterOptionViewModel[] EducationTypes =
     [
-        new() { Value = "CAO_DANG", Label = "Cao đẳng" },
+        new() { Value = "CAO_DANG", Label = "Đại học" },
         new() { Value = "LIEN_THONG", Label = "Liên thông" },
         new() { Value = "VAN_BANG_2", Label = "Văn bằng 2" },
         new() { Value = "TU_XA", Label = "Từ xa" }
