@@ -1,6 +1,6 @@
 @model wnc.Features.Admin.Applications.ViewModels.AdminApplicationsIndexViewModel
 @{
-    ViewData["Title"] = "Ho so tuyen sinh";
+    ViewData["Title"] = "Hồ sơ tuyển sinh";
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
@@ -21,49 +21,49 @@
     <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-sm font-medium text-blue-600">Quan ly tuyen sinh</p>
-                <h3 class="mt-1 text-2xl font-semibold text-slate-900">Ho so thi sinh</h3>
-                <p class="mt-2 text-sm text-slate-500">Theo doi so luong ho so, tien do xu ly va truy cap nhanh vao tung bo ho so da nop.</p>
+                <p class="text-sm font-medium text-blue-600">Quản lý tuyển sinh</p>
+                <h3 class="mt-1 text-2xl font-semibold text-slate-900">Hồ sơ thí sinh</h3>
+                <p class="mt-2 text-sm text-slate-500">Theo dõi số lượng hồ sơ, tiến độ xử lý và truy cập nhanh vào từng bộ hồ sơ đã nộp.</p>
             </div>
         </div>
 
         <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p class="text-sm font-medium text-slate-500">Tong ho so</p>
+                <p class="text-sm font-medium text-slate-500">Tổng hồ sơ</p>
                 <p class="mt-2 text-3xl font-semibold text-slate-900">@Model.StatusSummary.Total</p>
             </div>
             <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                <p class="text-sm font-medium text-emerald-700">Da nop</p>
+                <p class="text-sm font-medium text-emerald-700">Đã nộp</p>
                 <p class="mt-2 text-3xl font-semibold text-emerald-900">@Model.StatusSummary.Submitted</p>
             </div>
             <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4">
-                <p class="text-sm font-medium text-blue-700">Dang xet tuyen</p>
+                <p class="text-sm font-medium text-blue-700">Đang xét tuyển</p>
                 <p class="mt-2 text-3xl font-semibold text-blue-900">@Model.StatusSummary.UnderReview</p>
             </div>
             <div class="rounded-2xl border border-green-200 bg-green-50 p-4">
-                <p class="text-sm font-medium text-green-700">Trung tuyen</p>
+                <p class="text-sm font-medium text-green-700">Trúng tuyển</p>
                 <p class="mt-2 text-3xl font-semibold text-green-900">@Model.StatusSummary.Approved</p>
             </div>
             <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4">
-                <p class="text-sm font-medium text-rose-700">Tu choi</p>
+                <p class="text-sm font-medium text-rose-700">Từ chối</p>
                 <p class="mt-2 text-3xl font-semibold text-rose-900">@Model.StatusSummary.Rejected</p>
             </div>
             <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                <p class="text-sm font-medium text-amber-700">Ban nhap / Da huy</p>
+                <p class="text-sm font-medium text-amber-700">Bản nháp / Đã hủy</p>
                 <p class="mt-2 text-3xl font-semibold text-amber-900">@(Model.StatusSummary.Draft + Model.StatusSummary.Cancelled)</p>
             </div>
         </div>
 
         <form method="get" action="/admin/applications" class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(220px,1fr)_minmax(260px,1fr)_auto]">
             <div class="space-y-1">
-                <label for="searchTerm" class="block text-sm font-medium text-slate-700">Tim kiem</label>
-                <input id="searchTerm" name="searchTerm" value="@Model.SearchTerm" placeholder="Ma ho so, thi sinh, email, SDT..." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <label for="searchTerm" class="block text-sm font-medium text-slate-700">Tìm kiếm</label>
+                <input id="searchTerm" name="searchTerm" value="@Model.SearchTerm" placeholder="Mã hồ sơ, thí sinh, email, SĐT..." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
             </div>
 
             <div class="space-y-1">
-                <label for="status" class="block text-sm font-medium text-slate-700">Trang thai</label>
+                <label for="status" class="block text-sm font-medium text-slate-700">Trạng thái</label>
                 <select id="status" name="status" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
-                    <option value="">Tat ca trang thai</option>
+                    <option value="">Tất cả trạng thái</option>
                     @foreach (var status in Model.AvailableStatuses)
                     {
                         if (string.Equals(Model.Status, status, StringComparison.OrdinalIgnoreCase))
@@ -79,9 +79,9 @@
             </div>
 
             <div class="space-y-1">
-                <label for="roundId" class="block text-sm font-medium text-slate-700">Dot xet tuyen</label>
+                <label for="roundId" class="block text-sm font-medium text-slate-700">Đợt xét tuyển</label>
                 <select id="roundId" name="roundId" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
-                    <option value="">Tat ca dot</option>
+                    <option value="">Tất cả đợt</option>
                     @foreach (var round in Model.AvailableRounds)
                     {
                         if (Model.RoundId == round.Id)
@@ -97,8 +97,8 @@
             </div>
 
             <div class="flex items-end gap-2 xl:justify-end">
-                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700">Ap dung</button>
-                <a href="/admin/applications" class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">Dat lai</a>
+                <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700">Áp dụng</button>
+                <a href="/admin/applications" class="inline-flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900">Đặt lại</a>
             </div>
         </form>
     </article>
@@ -106,8 +106,8 @@
     <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
         <div class="flex flex-col gap-3 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h3 class="text-lg font-semibold text-slate-900">Danh sach ho so</h3>
-                <p class="mt-1 text-sm text-slate-500">Hien thi @Model.StartItem-@Model.EndItem cua @Model.TotalItems ho so.</p>
+                <h3 class="text-lg font-semibold text-slate-900">Danh sách hồ sơ</h3>
+                <p class="mt-1 text-sm text-slate-500">Hiển thị @Model.StartItem-@Model.EndItem của @Model.TotalItems hồ sơ.</p>
             </div>
         </div>
 
@@ -115,20 +115,20 @@
             <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
                 <thead class="bg-slate-50 text-slate-500">
                     <tr>
-                        <th scope="col" class="px-6 py-4 font-medium">Ma ho so</th>
-                        <th scope="col" class="px-6 py-4 font-medium">Thi sinh</th>
-                        <th scope="col" class="px-6 py-4 font-medium">Nganh / chuong trinh</th>
-                        <th scope="col" class="px-6 py-4 font-medium">Dot</th>
-                        <th scope="col" class="px-6 py-4 font-medium">Thoi diem</th>
-                        <th scope="col" class="px-6 py-4 font-medium">Trang thai</th>
-                        <th scope="col" class="px-6 py-4 font-medium">Thao tac</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Mã hồ sơ</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Thí sinh</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Ngành / chương trình</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Đợt</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Thời điểm</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Trạng thái</th>
+                        <th scope="col" class="px-6 py-4 font-medium">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
                     @if (Model.Applications.Count == 0)
                     {
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-500">Khong co ho so nao phu hop voi bo loc.</td>
+                            <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-500">Không có hồ sơ nào phù hợp với bộ lọc.</td>
                         </tr>
                     }
                     else
@@ -152,7 +152,7 @@
                                 <td class="px-6 py-4 text-slate-500">@application.RoundName</td>
                                 <td class="px-6 py-4 text-slate-500">
                                     <div>@application.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</div>
-                                    <div class="mt-1 text-xs">@(application.SubmittedAt.HasValue ? $"Nop: {application.SubmittedAt.Value.ToLocalTime():dd/MM/yyyy HH:mm}" : "Chua nop")</div>
+                                    <div class="mt-1 text-xs">@(application.SubmittedAt.HasValue ? $"Nộp: {application.SubmittedAt.Value.ToLocalTime():dd/MM/yyyy HH:mm}" : "Chưa nộp")</div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="rounded-full px-2.5 py-1 text-xs font-semibold @(application.CurrentStatus switch
@@ -169,7 +169,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <a href="/admin/applications/@application.Id" class="inline-flex items-center rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">Chi tiet</a>
+                                    <a href="/admin/applications/@application.Id" class="inline-flex items-center rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">Chi tiết</a>
                                 </td>
                             </tr>
                         }
@@ -181,9 +181,9 @@
         @if (Model.TotalPages > 1)
         {
             <div class="flex flex-col gap-3 border-t border-slate-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-                <p class="text-sm text-slate-500">Trang @Model.Page cua @Model.TotalPages</p>
+                <p class="text-sm text-slate-500">Trang @Model.Page của @Model.TotalPages</p>
                 <div class="flex gap-2">
-                    <a href="/admin/applications?searchTerm=@Model.SearchTerm&status=@Model.Status&roundId=@Model.RoundId&page=@Math.Max(1, Model.Page - 1)" class="@(Model.Page <= 1 ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Truoc</a>
+                    <a href="/admin/applications?searchTerm=@Model.SearchTerm&status=@Model.Status&roundId=@Model.RoundId&page=@Math.Max(1, Model.Page - 1)" class="@(Model.Page <= 1 ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Trước</a>
                     <a href="/admin/applications?searchTerm=@Model.SearchTerm&status=@Model.Status&roundId=@Model.RoundId&page=@Math.Min(Model.TotalPages, Model.Page + 1)" class="@(Model.Page >= Model.TotalPages ? "pointer-events-none rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-300" : "rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900")">Sau</a>
                 </div>
             </div>

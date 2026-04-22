@@ -10,6 +10,7 @@ public class AppUser
     [MaxLength(20)] public string? PhoneNumber { get; set; }
     [MaxLength(255)] public string PasswordHash { get; set; } = string.Empty;
     [MaxLength(30)] public string Status { get; set; } = "ACTIVE";
+    public bool BDisable { get; set; } = false;
     public DateTime? EmailVerifiedAt { get; set; }
     public DateTime? PhoneVerifiedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }

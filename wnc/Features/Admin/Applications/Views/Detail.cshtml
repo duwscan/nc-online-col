@@ -1,6 +1,6 @@
 @model wnc.Features.Admin.Applications.ViewModels.AdminApplicationDetailViewModel
 @{
-    ViewData["Title"] = "Chi tiet ho so";
+    ViewData["Title"] = "Chi tiết hồ sơ";
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
@@ -20,7 +20,7 @@
 <section class="space-y-6">
     <div class="flex items-center justify-between gap-4">
         <div>
-            <a href="/admin/applications" class="text-sm font-medium text-slate-500 transition hover:text-slate-900">&larr; Quay lai danh sach ho so</a>
+            <a href="/admin/applications" class="text-sm font-medium text-slate-500 transition hover:text-slate-900">&larr; Quay lại danh sách hồ sơ</a>
             <h3 class="mt-2 text-2xl font-semibold text-slate-900">@Model.ApplicationCode</h3>
         </div>
         <span class="rounded-full px-3 py-1 text-sm font-semibold @(Model.CurrentStatus switch
@@ -40,10 +40,10 @@
     <div class="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(340px,1fr)]">
         <article class="space-y-6">
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                <h4 class="text-lg font-semibold text-slate-900">Thong tin ho so</h4>
+                <h4 class="text-lg font-semibold text-slate-900">Thông tin hồ sơ</h4>
                 <div class="mt-4 grid gap-4 sm:grid-cols-2">
                     <div>
-                        <p class="text-sm text-slate-500">Thi sinh</p>
+                        <p class="text-sm text-slate-500">Thí sinh</p>
                         <p class="mt-1 font-medium text-slate-900">@Model.CandidateName</p>
                     </div>
                     <div>
@@ -51,38 +51,38 @@
                         <p class="mt-1 font-medium text-slate-900">@Model.CandidateEmail</p>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500">So dien thoai</p>
+                        <p class="text-sm text-slate-500">Số điện thoại</p>
                         <p class="mt-1 font-medium text-slate-900">@Model.CandidatePhoneNumber</p>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500">Dot xet tuyen</p>
+                        <p class="text-sm text-slate-500">Đợt xét tuyển</p>
                         <p class="mt-1 font-medium text-slate-900">@Model.RoundName</p>
                         <p class="text-xs text-slate-500">@Model.RoundCode</p>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500">Chuong trinh</p>
+                        <p class="text-sm text-slate-500">Chương trình</p>
                         <p class="mt-1 font-medium text-slate-900">@Model.ProgramName</p>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500">Nganh</p>
-                        <p class="mt-1 font-medium text-slate-900">@(string.IsNullOrWhiteSpace(Model.MajorName) ? "Khong phan nganh" : Model.MajorName)</p>
+                        <p class="text-sm text-slate-500">Ngành</p>
+                        <p class="mt-1 font-medium text-slate-900">@(string.IsNullOrWhiteSpace(Model.MajorName) ? "Không phân ngành" : Model.MajorName)</p>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500">Ngay tao</p>
+                        <p class="text-sm text-slate-500">Ngày tạo</p>
                         <p class="mt-1 font-medium text-slate-900">@Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</p>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500">Ngay nop</p>
-                        <p class="mt-1 font-medium text-slate-900">@(Model.SubmittedAt.HasValue ? Model.SubmittedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "Chua nop")</p>
+                        <p class="text-sm text-slate-500">Ngày nộp</p>
+                        <p class="mt-1 font-medium text-slate-900">@(Model.SubmittedAt.HasValue ? Model.SubmittedAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm") : "Chưa nộp")</p>
                     </div>
                     <div class="sm:col-span-2">
-                        <p class="text-sm text-slate-500">Dia chi</p>
-                        <p class="mt-1 font-medium text-slate-900">@(string.IsNullOrWhiteSpace(Model.CandidateAddress) ? "Chua cap nhat" : Model.CandidateAddress)</p>
+                        <p class="text-sm text-slate-500">Địa chỉ</p>
+                        <p class="mt-1 font-medium text-slate-900">@(string.IsNullOrWhiteSpace(Model.CandidateAddress) ? "Chưa cập nhật" : Model.CandidateAddress)</p>
                     </div>
                     @if (!string.IsNullOrWhiteSpace(Model.RejectionReason))
                     {
                         <div class="sm:col-span-2 rounded-2xl border border-rose-200 bg-rose-50 p-4">
-                            <p class="text-sm font-medium text-rose-700">Ly do tu choi hien tai</p>
+                            <p class="text-sm font-medium text-rose-700">Lý do từ chối hiện tại</p>
                             <p class="mt-1 text-sm text-rose-900">@Model.RejectionReason</p>
                         </div>
                     }
@@ -90,12 +90,12 @@
             </div>
 
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                <h4 class="text-lg font-semibold text-slate-900">Tai lieu da nop</h4>
+                <h4 class="text-lg font-semibold text-slate-900">Tài liệu đã nộp</h4>
                 <div class="mt-4 space-y-3">
                     @if (Model.Documents.Count == 0)
                     {
                         <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-                            Ho so nay chua co tai lieu nao duoc tai len.
+                            Hồ sơ này chưa có tài liệu nào được tải lên.
                         </div>
                     }
                     else
@@ -123,12 +123,12 @@
             </div>
 
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                <h4 class="text-lg font-semibold text-slate-900">Lich su trang thai</h4>
+                <h4 class="text-lg font-semibold text-slate-900">Lịch sử trạng thái</h4>
                 <div class="mt-4 space-y-4">
                     @if (Model.Timeline.Count == 0)
                     {
                         <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-                            Chua co lich su thay doi trang thai.
+                            Chưa có lịch sử thay đổi trạng thái.
                         </div>
                     }
                     else
@@ -143,7 +143,7 @@
                                         </p>
                                         @if (!string.IsNullOrWhiteSpace(entry.ChangedByName))
                                         {
-                                            <p class="mt-1 text-xs text-slate-500">Cap nhat boi @entry.ChangedByName</p>
+                                            <p class="mt-1 text-xs text-slate-500">Cập nhật bởi @entry.ChangedByName</p>
                                         }
                                     </div>
                                     <span class="text-xs text-slate-400">@entry.ChangedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
@@ -152,21 +152,21 @@
                                 @if (!string.IsNullOrWhiteSpace(entry.Reason))
                                 {
                                     <div class="mt-3 rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-700">
-                                        <span class="font-medium">Ly do:</span> @entry.Reason
+                                        <span class="font-medium">Lý do:</span> @entry.Reason
                                     </div>
                                 }
 
                                 @if (!string.IsNullOrWhiteSpace(entry.PublicNote))
                                 {
                                     <div class="mt-3 rounded-2xl border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800">
-                                        <span class="font-medium">Ghi chu gui thi sinh:</span> @entry.PublicNote
+                                        <span class="font-medium">Ghi chú gửi thí sinh:</span> @entry.PublicNote
                                     </div>
                                 }
 
                                 @if (!string.IsNullOrWhiteSpace(entry.InternalNote))
                                 {
                                     <div class="mt-3 rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-                                        <span class="font-medium">Ghi chu noi bo:</span> @entry.InternalNote
+                                        <span class="font-medium">Ghi chú nội bộ:</span> @entry.InternalNote
                                     </div>
                                 }
                             </div>
@@ -178,11 +178,11 @@
 
         <aside class="space-y-6">
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                <h4 class="text-lg font-semibold text-slate-900">Doi trang thai</h4>
+                <h4 class="text-lg font-semibold text-slate-900">Đổi trạng thái</h4>
                 @if (Model.StatusUpdate.AvailableStatuses.Count == 0)
                 {
                     <div class="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-                        Trang thai hien tai khong co luong chuyen tiep nao duoc cau hinh.
+                        Trạng thái hiện tại không có luồng chuyển tiếp nào được cấu hình.
                     </div>
                 }
                 else
@@ -193,7 +193,7 @@
                         <input type="hidden" name="CurrentStatus" value="@Model.StatusUpdate.CurrentStatus" />
 
                         <div class="space-y-1">
-                            <label for="NewStatus" class="block text-sm font-medium text-slate-700">Trang thai moi</label>
+                            <label for="NewStatus" class="block text-sm font-medium text-slate-700">Trạng thái mới</label>
                             <select id="NewStatus" name="NewStatus" class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400">
                                 @foreach (var status in Model.StatusUpdate.AvailableStatuses)
                                 {
@@ -203,33 +203,33 @@
                         </div>
 
                         <div class="space-y-1">
-                            <label for="Reason" class="block text-sm font-medium text-slate-700">Ly do</label>
-                            <textarea id="Reason" name="Reason" rows="3" placeholder="Bat buoc khi tu choi ho so." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                            <label for="Reason" class="block text-sm font-medium text-slate-700">Lý do</label>
+                            <textarea id="Reason" name="Reason" rows="3" placeholder="Bắt buộc khi từ chối hồ sơ." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
                         </div>
 
                         <div class="space-y-1">
-                            <label for="PublicNote" class="block text-sm font-medium text-slate-700">Ghi chu gui thi sinh</label>
-                            <textarea id="PublicNote" name="PublicNote" rows="4" placeholder="Noi dung nay se xuat hien trong lich su trang thai cua thi sinh." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                            <label for="PublicNote" class="block text-sm font-medium text-slate-700">Ghi chú gửi thí sinh</label>
+                            <textarea id="PublicNote" name="PublicNote" rows="4" placeholder="Nội dung này sẽ xuất hiện trong lịch sử trạng thái của thí sinh." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
                         </div>
 
                         <div class="space-y-1">
-                            <label for="InternalNote" class="block text-sm font-medium text-slate-700">Ghi chu noi bo</label>
-                            <textarea id="InternalNote" name="InternalNote" rows="4" placeholder="Chi hien thi trong man quan tri." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                            <label for="InternalNote" class="block text-sm font-medium text-slate-700">Ghi chú nội bộ</label>
+                            <textarea id="InternalNote" name="InternalNote" rows="4" placeholder="Chỉ hiển thị trong màn quản trị." class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
                         </div>
 
                         <button type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                            Cap nhat trang thai
+                            Cập nhật trạng thái
                         </button>
                     </form>
                 }
             </div>
 
             <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-                <h4 class="text-lg font-semibold text-slate-900">Luu y van hanh</h4>
+                <h4 class="text-lg font-semibold text-slate-900">Lưu ý vận hành</h4>
                 <ul class="mt-4 space-y-3 text-sm text-slate-600">
-                    <li>Chi nen chuyen sang <code>APPROVED</code> sau khi da hoan tat ra soat ho so.</li>
-                    <li>Trang thai <code>REJECTED</code> yeu cau ghi ro ly do de thi sinh tra cuu.</li>
-                    <li>Ghi chu noi bo phu hop cho quyet dinh nghiep vu, khong hien thi cho thi sinh.</li>
+                    <li>Chỉ nên chuyển sang <code>APPROVED</code> sau khi đã hoàn tất rà soát hồ sơ.</li>
+                    <li>Trạng thái <code>REJECTED</code> yêu cầu ghi rõ lý do để thí sinh tra cứu.</li>
+                    <li>Ghi chú nội bộ phù hợp cho quyết định nghiệp vụ, không hiển thị cho thí sinh.</li>
                 </ul>
             </div>
         </aside>

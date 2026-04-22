@@ -507,7 +507,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.TranscriptMethodId,
                 MethodCode = "HOC_BA",
-                MethodName = "Xet hoc ba",
+                MethodName = "Xét học bạ",
                 Description = "Academic transcript based admission",
                 Status = "ACTIVE",
                 CreatedAt = seededAt,
@@ -517,7 +517,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.ExamMethodId,
                 MethodCode = "DIEM_THI",
-                MethodName = "Xet diem thi",
+                MethodName = "Xét điểm thi",
                 Description = "Exam score based admission",
                 Status = "ACTIVE",
                 CreatedAt = seededAt,
@@ -527,7 +527,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.DirectMethodId,
                 MethodCode = "TUYEN_THANG",
-                MethodName = "Xet tuyen thang",
+                MethodName = "Xét tuyển thẳng",
                 Description = "Direct admission",
                 Status = "ACTIVE",
                 CreatedAt = seededAt,
@@ -539,7 +539,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.IdCardDocumentId,
                 DocumentCode = "CCCD",
-                DocumentName = "Can cuoc cong dan",
+                DocumentName = "Căn cước công dân",
                 Description = "Citizen identification card",
                 Status = "ACTIVE",
                 CreatedAt = seededAt
@@ -548,7 +548,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.TranscriptDocumentId,
                 DocumentCode = "HOC_BA",
-                DocumentName = "Hoc ba",
+                DocumentName = "Học bạ",
                 Description = "Academic transcript",
                 Status = "ACTIVE",
                 CreatedAt = seededAt
@@ -557,7 +557,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.BirthCertificateDocumentId,
                 DocumentCode = "KHAI_SINH",
-                DocumentName = "Giay khai sinh",
+                DocumentName = "Giấy khai sinh",
                 Description = "Birth certificate",
                 Status = "ACTIVE",
                 CreatedAt = seededAt
@@ -587,8 +587,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 Id = SeedIds.MajorCnttId,
                 ProgramId = SeedIds.DefaultProgramId,
                 MajorCode = "CNTT",
-                MajorName = "Cong nghe thong tin",
-                Description = "Cong nghe thong tin",
+                MajorName = "Công nghệ thông tin",
+                Description = "Công nghệ thông tin",
                 Quota = 150,
                 DisplayOrder = 1,
                 Status = "ACTIVE",
@@ -600,8 +600,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 Id = SeedIds.MajorKeToanId,
                 ProgramId = SeedIds.DefaultProgramId,
                 MajorCode = "KT",
-                MajorName = "Ke toan",
-                Description = "Ke toan doanh nghiep",
+                MajorName = "Kế toán",
+                Description = "Kế toán doanh nghiệp",
                 Quota = 100,
                 DisplayOrder = 2,
                 Status = "ACTIVE",
@@ -627,12 +627,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.Round2025Id,
                 RoundCode = "DOT1-2025",
-                RoundName = "Dot 1 nam 2025",
+                RoundName = "Đợt 1 năm 2025",
                 AdmissionYear = 2025,
                 StartAt = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc),
                 EndAt = new DateTime(2025, 6, 30, 23, 59, 59, DateTimeKind.Utc),
                 Status = "PUBLISHED",
-                Notes = "Dot xet tuyen chinh quy nam 2025",
+                Notes = "Đợt xét tuyển chính quy năm 2025",
                 AllowEnrollmentConfirmation = false,
                 CreatedAt = seededAt,
                 UpdatedAt = seededAt
@@ -641,12 +641,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.Round2026Id,
                 RoundCode = "DOT1-2026",
-                RoundName = "Dot 1 nam 2026",
+                RoundName = "Đợt 1 năm 2026",
                 AdmissionYear = 2026,
                 StartAt = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc),
                 EndAt = new DateTime(2026, 6, 30, 23, 59, 59, DateTimeKind.Utc),
                 Status = "PUBLISHED",
-                Notes = "Dot xet tuyen chinh quy nam 2026",
+                Notes = "Đợt xét tuyển chính quy năm 2026",
                 AllowEnrollmentConfirmation = true,
                 CreatedAt = seededAt,
                 UpdatedAt = seededAt
@@ -655,12 +655,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.Round2026Dot2Id,
                 RoundCode = "DOT2-2026",
-                RoundName = "Dot 2 nam 2026",
+                RoundName = "Đợt 2 năm 2026",
                 AdmissionYear = 2026,
                 StartAt = new DateTime(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc),
                 EndAt = new DateTime(2026, 9, 30, 23, 59, 59, DateTimeKind.Utc),
                 Status = "PUBLISHED",
-                Notes = "Dot xet tuyen chinh quy dot 2 nam 2026",
+                Notes = "Đợt xét tuyển chính quy đợt 2 năm 2026",
                 AllowEnrollmentConfirmation = false,
                 CreatedAt = seededAt,
                 UpdatedAt = seededAt
@@ -669,12 +669,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             {
                 Id = SeedIds.Round2026Dot3Id,
                 RoundCode = "DOT3-2027",
-                RoundName = "Dot 3 nam 2027",
+                RoundName = "Đợt 3 năm 2027",
                 AdmissionYear = 2027,
                 StartAt = new DateTime(2027, 3, 1, 0, 0, 0, DateTimeKind.Utc),
                 EndAt = new DateTime(2027, 6, 30, 23, 59, 59, DateTimeKind.Utc),
                 Status = "PUBLISHED",
-                Notes = "Dot xet tuyen chinh quy nam 2027",
+                Notes = "Đợt xét tuyển chính quy năm 2027",
                 AllowEnrollmentConfirmation = false,
                 CreatedAt = seededAt,
                 UpdatedAt = seededAt

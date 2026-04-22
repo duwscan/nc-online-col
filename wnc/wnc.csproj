@@ -22,4 +22,8 @@
       <None Remove="docs\ajax-flow.md" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Migrations\20260421164434_AddBDisable.cs" />
+    </ItemGroup>
+
 </Project>
