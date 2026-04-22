@@ -10,6 +10,7 @@ public class DocumentType
     public string? Description { get; set; }
     [MaxLength(30)] public string Status { get; set; } = "ACTIVE";
     public DateTime CreatedAt { get; set; }
+    public bool bDisable { get; set; } = false;
 
     public ICollection<RoundDocumentRequirement> RoundDocumentRequirements { get; set; } = new List<RoundDocumentRequirement>();
     public ICollection<ApplicationDocument> ApplicationDocuments { get; set; } = new List<ApplicationDocument>();

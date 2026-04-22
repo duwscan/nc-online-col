@@ -1,11 +1,29 @@
 @model DocumentType
 @{
     ViewData["Title"] = "Sửa loại giấy tờ";
+    bool isAdmin = (bool)ViewBag.IsAdmin;
+    bool isDisabled = (bool)ViewBag.IsDisabled;
+    bool canEdit = isAdmin && !isDisabled;
 }
 
 <div class="mx-auto max-w-2xl space-y-6">
     <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
-        <h1 class="text-xl font-semibold text-slate-900">Sửa loại giấy tờ</h1>
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl font-semibold text-slate-900">Sửa loại giấy tờ</h1>
+            @if (!canEdit)
+            {
+                <span class="rounded-lg bg-yellow-50 px-3 py-1 text-sm font-medium text-yellow-800">
+                    @if (isDisabled)
+                    {
+                        <span>🔒 Bị khóa</span>
+                    }
+                    else
+                    {
+                        <span>👁️ Chỉ xem</span>
+                    }
+                </span>
+            }
+        </div>
 
         @if (!ViewData.ModelState.IsValid)
         {
@@ -28,24 +46,31 @@
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">Tên giấy tờ</label>
-                <input name="DocumentName" id="DocumentName" value="@Model.DocumentName" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="VD: Căn cước công dân" />
+                <input name="DocumentName" id="DocumentName" value="@Model.DocumentName" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3" placeholder="VD: Căn cước công dân" @(canEdit ? "" : "disabled") />
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">Mô tả</label>
-                <textarea name="Description" rows="3" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3">@Model.Description</textarea>
+                <textarea name="Description" rows="3" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3" @(canEdit ? "" : "disabled")>@Model.Description</textarea>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-slate-700">Trạng thái</label>
-                <select name="Status" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3">
+                <select name="Status" class="mt-1 w-full rounded-xl border border-slate-300 px-4 py-3" @(canEdit ? "" : "disabled")>
                     <option value="ACTIVE" selected="@(Model.Status == "ACTIVE")">ACTIVE</option>
                     <option value="INACTIVE" selected="@(Model.Status == "INACTIVE")">INACTIVE</option>
                 </select>
             </div>
 
             <div class="flex gap-3 pt-4">
-                <button type="submit" class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">Lưu</button>
+                @if (canEdit)
+                {
+                    <button type="submit" class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700">Lưu</button>
+                }
+                else
+                {
+                    <button type="submit" class="rounded-xl bg-gray-400 px-6 py-3 text-sm font-semibold text-white cursor-not-allowed" disabled>Lưu</button>
+                }
                 <a href="/admin/document-types" class="rounded-xl border border-slate-300 px-6 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">Hủy</a>
             </div>
         </form>
@@ -62,8 +87,11 @@
                 .replace(/^-|-$/g, '');
         }
 
-        document.getElementById('DocumentName').addEventListener('input', function(e) {
-            document.querySelector('input[name="DocumentCode"]').value = generateSlug(e.target.value);
-        });
+        const nameInput = document.getElementById('DocumentName');
+        if (nameInput && !nameInput.disabled) {
+            nameInput.addEventListener('input', function(e) {
+                document.querySelector('input[name="DocumentCode"]').value = generateSlug(e.target.value);
+            });
+        }
     </script>
 }

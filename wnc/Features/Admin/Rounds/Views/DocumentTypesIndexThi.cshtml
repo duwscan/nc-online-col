@@ -1,0 +1,77 @@
+@model List<DocumentType>
+@{
+    ViewData["Title"] = "Loại giấy tờ";
+}
+
+<div class="space-y-6">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="rounded-xl bg-green-50 p-4 text-sm text-green-700">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="rounded-xl bg-red-50 p-4 text-sm text-red-700">@TempData["ErrorMessage"]</div>
+    }
+
+    <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
+        <form action="/admin/document-types/search" method="get">
+            <input placeholder="ten giay to" name="giayTo"/>
+            <input placeholder="mo ta" name="moTa"/>
+            <button type="submit">find</button>
+            <a href="/admin/document-types/search">reset</a>
+        </form>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                <tr>
+                    <th class="px-6 py-4 font-medium">Mã</th>
+                    <th class="px-6 py-4 font-medium">Tên giấy tờ</th>
+                    <th class="px-6 py-4 font-medium">Mô tả</th>
+                    <th class="px-6 py-4 font-medium">Trạng thái</th>
+                    <th class="px-6 py-4 font-medium">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 bg-white text-slate-700">
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-sm text-slate-500">Không có loại giấy tờ nào.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var dt in Model)
+                    {
+                        <tr>
+                            <td class="px-6 py-4">
+                                <span class="rounded-lg bg-slate-100 px-2 py-1 font-mono text-sm font-semibold text-slate-700">@dt.DocumentCode</span>
+                            </td>
+                            <td class="px-6 py-4 font-medium text-slate-900">@dt.DocumentName</td>
+                            <td class="px-6 py-4 text-slate-500">@dt.Description</td>
+                            <td class="px-6 py-4">
+                                @if (dt.Status == "ACTIVE")
+                                {
+                                    <span class="rounded-full bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700">ACTIVE</span>
+                                }
+                                else
+                                {
+                                    <span class="rounded-full bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-600">@dt.Status</span>
+                                }
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex gap-2">
+                                    <a href="/admin/document-types/edit/@dt.Id" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900">Sửa</a>
+                                    <form method="post" action="/admin/document-types/delete/@dt.Id" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="rounded-xl border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-50 hover:text-rose-700">Xóa</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </article>
+</div>

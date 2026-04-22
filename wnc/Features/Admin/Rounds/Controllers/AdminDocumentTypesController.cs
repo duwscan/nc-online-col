@@ -78,6 +78,8 @@ public class AdminDocumentTypesController(AppDbContext dbContext) : Controller
         if (docType == null)
             return NotFound();
 
+        ViewBag.IsAdmin = User.IsInRole("ADMIN");
+        ViewBag.IsDisabled = docType.bDisable;
         return View("~/Features/Admin/Rounds/Views/DocumentTypeEdit.cshtml", docType);
     }
 
@@ -87,6 +89,16 @@ public class AdminDocumentTypesController(AppDbContext dbContext) : Controller
     {
         if (id != model.Id)
             return NotFound();
+
+        var docType = await dbContext.DocumentTypes.FindAsync(id);
+        if (docType == null)
+            return NotFound();
+
+        if (!User.IsInRole("ADMIN") || docType.bDisable)
+        {
+            TempData["ErrorMessage"] = "Bạn không có quyền sửa loại giấy tờ này.";
+            return Redirect("/admin/document-types");
+        }
 
         if (string.IsNullOrWhiteSpace(model.DocumentName))
             ModelState.AddModelError("DocumentName", "Tên giấy tờ là bắt buộc.");
@@ -98,11 +110,11 @@ public class AdminDocumentTypesController(AppDbContext dbContext) : Controller
             ModelState.AddModelError("DocumentName", "Mã giấy tờ đã tồn tại.");
 
         if (!ModelState.IsValid)
+        {
+            ViewBag.IsAdmin = User.IsInRole("ADMIN");
+            ViewBag.IsDisabled = docType.bDisable;
             return View("~/Features/Admin/Rounds/Views/DocumentTypeEdit.cshtml", model);
-
-        var docType = await dbContext.DocumentTypes.FindAsync(id);
-        if (docType == null)
-            return NotFound();
+        }
 
         docType.DocumentCode = documentCode;
         docType.DocumentName = model.DocumentName.Trim();
